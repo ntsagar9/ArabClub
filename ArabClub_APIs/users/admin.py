@@ -127,7 +127,7 @@ class UserAdmin(BaseUserAdmin):
         UserGitHub
     ]
 
-    # The fields to be used in displaying the User model.
+    # The fields to be used in displaying the User serializer.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
     list_display = ('email', 'username', 'is_admin')
@@ -156,5 +156,5 @@ class UserAdmin(BaseUserAdmin):
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
 # ... and, since we're not using Django's built-in permissions,
-# unregister the Group model from admin.
+# unregister the Group serializer from admin.
 admin.site.unregister(Group)

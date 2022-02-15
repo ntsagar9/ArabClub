@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 class CustomUserManager(BaseUserManager):
     """
-    Custom user model manager where email is the unique identifiers
+    Custom user serializer manager where email is the unique identifiers
     for authentication instead of usernames.
     """
 
@@ -62,8 +62,8 @@ class User(AbstractBaseUser):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'date_of_birth']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email', 'date_of_birth']
 
     def __str__(self):
         return self.username
