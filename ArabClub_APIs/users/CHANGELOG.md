@@ -110,3 +110,53 @@ allowed_method = ["GET", "PUT"]
     "user_id": 1
 }
 ```
+
+## [1.0.1]
+
+### Added ➕
+
+- create one endpoint for Update or create  **_" All data "_** for user
+
+### Fixed⚒️
+
+- Fixed skills relationship
+- Fixed user data serializer
+- Fixed update data 
+- Fixed user details view
+- Fixed list all users view for admin only
+- Fixed Validate username and phone
+
+### Feature 🧑‍💻
+**_``One url to view all user data and change or add new data [GET, PUT] 
+Methods 😁``_**
+
+- new endpoint url ``/account/user/islam.admin/`` I/O
+```json
+    {
+        "id": 1,
+        "name": {
+            "first_name": "Islam",
+            "last_name": "Kamel"
+        },
+        "username": "islam_admin",
+        "email": "islam@admin.eg",
+        "date_of_birth": "1998-06-13",
+        "bio": {
+            "bio": "Hello, Firend"
+        },
+        "skills": {
+            "skill_name": "python"
+        },
+        "github_url": {
+            "url": "https://github.com/"
+        },
+        "phone": {
+            "phone": "01066373279"
+        },
+        "address": {
+            "country": "Egypt",
+            "city": "qus",
+            "street_name": "Qus"
+        }
+    }
+```

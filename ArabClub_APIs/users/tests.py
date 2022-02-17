@@ -73,13 +73,10 @@ class UserRelationsTest(TestCase):
         user skills
         """
         s1 = Skills.objects.create(skill_name='python1', user_id=user.pk)
-        s2 = Skills.objects.create(skill_name='python2', user_id=user.pk)
-        s3 = Skills.objects.create(skill_name='python3', user_id=user.pk)
+
 
         self.assertEqual(str(s1), 'python1')
-        self.assertEqual(s1.skill_name, 'python1')
-        self.assertEqual(s2.skill_name, 'python2')
-        self.assertEqual(s3.skill_name, 'python3')
+
 
         """
         User Address
@@ -113,7 +110,7 @@ class UserRelationsTest(TestCase):
         Relations Models Test
         """
         phone = Phone.objects.get(user_id=user.pk)
-        s1, s2, s3 = Skills.objects.all().filter(user_id=user.pk)
+        s1 = Skills.objects.get(user_id=user.pk)
         address = Address.objects.get(user_id=user.pk)
         bio = Bio.objects.get(user_id=user.pk)
         names = FirstNameAndLastName.objects.get(user_id=user.pk)
@@ -121,8 +118,6 @@ class UserRelationsTest(TestCase):
 
         self.assertEqual(phone.phone, '01066373279')
         self.assertEqual(s1.skill_name, 'python1')
-        self.assertEqual(s2.skill_name, 'python2')
-        self.assertEqual(s3.skill_name, 'python3')
         self.assertEqual(address.country, 'Egypt')
         self.assertEqual(address.city, 'Qena')
         self.assertEqual(address.street_name, 'Qus')

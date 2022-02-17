@@ -7,17 +7,18 @@ from users.views import (
     SkillsView,
     AddressView,
     GitHubView,
-    PhoneView
+    PhoneView,
 )
 
+url_path = "user/<str:username>/"
+
 urlpatterns = [
-    path('list', ListUserView.as_view()),
-    path('user/<str:username>', UserDetailsView.as_view(),
-         name='user_details'),
-    path('user/<str:username>/person-info', PersonInfoView.as_view()),
-    path('user/<str:username>/bio', BioView.as_view()),
-    path('user/<str:username>/skills', SkillsView.as_view()),
-    path('user/<str:username>/address', AddressView.as_view()),
-    path('user/<str:username>/github', GitHubView.as_view()),
-    path('user/<str:username>/phone', PhoneView.as_view())
+    path("list", ListUserView.as_view()),
+    path(url_path, UserDetailsView.as_view(), name="user_details"),
+    path(url_path + "person-info/", PersonInfoView.as_view(), name="person_info"),
+    path(url_path + "bio/", BioView.as_view(), name="bio"),
+    path(url_path + "skills/", SkillsView.as_view()),
+    path(url_path + "address/", AddressView.as_view()),
+    path(url_path + "github/", GitHubView.as_view()),
+    path(url_path + "phone/", PhoneView.as_view()),
 ]
