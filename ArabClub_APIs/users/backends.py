@@ -9,10 +9,10 @@ class EmailModelBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username is not None:
-            if '@' in username:
-                kwargs = {'email': username}
+            if "@" in username:
+                kwargs = {"email": username}
             else:
-                kwargs = {'username': username}
+                kwargs = {"username": username}
 
         if password is None:
             return None
@@ -21,6 +21,5 @@ class EmailModelBackend(ModelBackend):
         except User.DoesNotExist:
             pass
         else:
-            if user.check_password(password) and self.user_can_authenticate(
-                    user):
+            if user.check_password(password) and self.user_can_authenticate(user):
                 return user

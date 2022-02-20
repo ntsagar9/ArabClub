@@ -20,10 +20,10 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError(_("The Email must be set."))
 
-        is_valid_username = re.search(
-            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$", username
+        pattern = re.compile(
+            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
         )
-        if not is_valid_username:
+        if not re.fullmatch(pattern, username):
             raise ValueError(_("Enter Valid Username"))
 
         user = self.model(
