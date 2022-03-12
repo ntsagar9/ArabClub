@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-
+from newsfeed.models import FollowTags
 from users.models import (
     User,
     FirstNameAndLastName,
@@ -136,6 +136,9 @@ class UserGitHub(admin.TabularInline):
 
     model = GitHubAccount
 
+class UserFollowTags(admin.TabularInline):
+    model = FollowTags
+
 
 class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
@@ -148,6 +151,7 @@ class UserAdmin(BaseUserAdmin):
         UserAddress,
         UserSkills,
         UserGitHub,
+        UserFollowTags,
     ]
 
     # The fields to be used in displaying the User serializer.

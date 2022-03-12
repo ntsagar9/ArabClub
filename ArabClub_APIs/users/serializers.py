@@ -11,6 +11,7 @@ from users.models import (
     GitHubAccount,
     Skills,
 )
+from newsfeed.models import FollowTags, Tag
 
 
 def try_auto(func):
@@ -22,6 +23,11 @@ def try_auto(func):
 
     return run
 
+
+class FollowTagsSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = FollowTags
+        fields = '__all__'
 
 # User First name and last name serializers with custom update data method
 class NameSerializer(serializers.ModelSerializer):
@@ -163,6 +169,7 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=False)
     date_of_birth = serializers.DateField(required=False)
     github_url = GitHubSerializer(required=False)
+    follow_tags = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = get_user_model()
@@ -177,6 +184,7 @@ class UserSerializer(serializers.ModelSerializer):
             "github_url",
             "phone",
             "address",
+            "follow_tags",
         ]
 
     def validate_username(self, username):
