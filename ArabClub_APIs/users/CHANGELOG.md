@@ -131,6 +131,7 @@ allowed_method = ["GET", "PUT"]
 Methods 😁``_**
 
 - new endpoint url ``/account/user/islam.admin/`` I/O
+
 ```json
     {
         "id": 1,

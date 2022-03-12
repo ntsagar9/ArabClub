@@ -4,7 +4,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
+# from newsfeed.models import Tag
 
 class CustomUserManager(BaseUserManager):
     """
@@ -20,10 +20,10 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError(_("The Email must be set."))
 
-        is_valid_username = re.search(
-            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$", username
+        pattern = re.compile(
+            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
         )
-        if not is_valid_username:
+        if not re.fullmatch(pattern, username):
             raise ValueError(_("Enter Valid Username"))
 
         user = self.model(
@@ -53,7 +53,8 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     email = models.EmailField(verbose_name="Email", max_length=255, unique=True)
-    username = models.CharField(verbose_name="Username", max_length=50, unique=True)
+    username = models.CharField(verbose_name="Username", max_length=50,
+                                unique=True)
     date_of_birth = models.DateField()
 
     is_active = models.BooleanField(default=True)
@@ -125,7 +126,8 @@ class Phone(models.Model):
 class GitHubAccount(models.Model):
     url = models.URLField()
     user = models.OneToOneField(
-        User, related_name="github_url", primary_key=True, on_delete=models.CASCADE
+        User, related_name="github_url", primary_key=True,
+        on_delete=models.CASCADE
     )
 
     def __str__(self):
