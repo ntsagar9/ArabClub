@@ -39,7 +39,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('api/v1/posts', include('newsfeed.urls'), name='home'),
+    path('api/v1/posts/', include('newsfeed.urls'), name='home'),
     path('admin/', admin.site.urls),
     path('api/v1/account/', include('users.urls')),
     path('api/v1/token/', TokenObtainPairView.as_view(),

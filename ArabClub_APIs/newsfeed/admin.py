@@ -8,8 +8,8 @@ class Tags(admin.TabularInline):
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'status')
-    prepopulated_fields = {'slug': ('title',)}
+    list_display = ("title", "user", "status")
+    prepopulated_fields = {"slug": ("title",)}
 
 
 admin.site.register(Tag)

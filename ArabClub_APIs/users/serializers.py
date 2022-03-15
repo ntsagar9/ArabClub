@@ -27,7 +27,8 @@ def try_auto(func):
 class FollowTagsSerializers(serializers.ModelSerializer):
     class Meta:
         model = FollowTags
-        fields = '__all__'
+        fields = "__all__"
+
 
 # User First name and last name serializers with custom update data method
 class NameSerializer(serializers.ModelSerializer):
