@@ -136,6 +136,7 @@ class UserGitHub(admin.TabularInline):
 
     model = GitHubAccount
 
+
 class UserFollowTags(admin.TabularInline):
     model = FollowTags
 

@@ -9,69 +9,154 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('email', models.EmailField(max_length=255, unique=True, verbose_name='Email')),
-                ('username', models.CharField(max_length=50, unique=True, verbose_name='Username')),
-                ('date_of_birth', models.DateField()),
-                ('is_active', models.BooleanField(default=True)),
-                ('is_admin', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "email",
+                    models.EmailField(
+                        max_length=255, unique=True, verbose_name="Email"
+                    ),
+                ),
+                (
+                    "username",
+                    models.CharField(
+                        max_length=50, unique=True, verbose_name="Username"
+                    ),
+                ),
+                ("date_of_birth", models.DateField()),
+                ("is_active", models.BooleanField(default=True)),
+                ("is_admin", models.BooleanField(default=False)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='Address',
+            name="Address",
             fields=[
-                ('country', models.CharField(max_length=50, verbose_name='Country')),
-                ('city', models.CharField(max_length=50, verbose_name='City')),
-                ('street_name', models.CharField(max_length=150, verbose_name='Street Name')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='address', serialize=False, to=settings.AUTH_USER_MODEL)),
+                ("country", models.CharField(max_length=50, verbose_name="Country")),
+                ("city", models.CharField(max_length=50, verbose_name="City")),
+                (
+                    "street_name",
+                    models.CharField(max_length=150, verbose_name="Street Name"),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        related_name="address",
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Bio',
+            name="Bio",
             fields=[
-                ('bio', models.TextField(max_length=255, verbose_name='Bio')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='bio', serialize=False, to=settings.AUTH_USER_MODEL)),
+                ("bio", models.TextField(max_length=255, verbose_name="Bio")),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        related_name="bio",
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='FirstNameAndLastName',
+            name="FirstNameAndLastName",
             fields=[
-                ('first_name', models.CharField(max_length=50, verbose_name='First Name')),
-                ('last_name', models.CharField(max_length=50, verbose_name='Last Name')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='name', serialize=False, to=settings.AUTH_USER_MODEL)),
+                (
+                    "first_name",
+                    models.CharField(max_length=50, verbose_name="First Name"),
+                ),
+                (
+                    "last_name",
+                    models.CharField(max_length=50, verbose_name="Last Name"),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        related_name="name",
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='GitHubAccount',
+            name="GitHubAccount",
             fields=[
-                ('url', models.URLField()),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='github_url', serialize=False, to=settings.AUTH_USER_MODEL)),
+                ("url", models.URLField()),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        related_name="github_url",
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Phone',
+            name="Phone",
             fields=[
-                ('phone', models.CharField(max_length=15, verbose_name='Phone Number')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='phone', serialize=False, to=settings.AUTH_USER_MODEL)),
+                ("phone", models.CharField(max_length=15, verbose_name="Phone Number")),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        related_name="phone",
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Skills',
+            name="Skills",
             fields=[
-                ('skill_name', models.CharField(max_length=150)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='skills', serialize=False, to=settings.AUTH_USER_MODEL)),
+                ("skill_name", models.CharField(max_length=150)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        related_name="skills",
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

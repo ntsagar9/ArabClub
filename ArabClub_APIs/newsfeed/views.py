@@ -1,41 +1,38 @@
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from newsfeed.feed import NewsFeed
-from newsfeed.models import Post, FollowTags, Comments
+from newsfeed.models import Post, Comments, Reply
 from newsfeed.permissions import IsOwner
-from newsfeed.serializer import PostSerializer, CommentsSerializer
-from users.models import User
+from newsfeed.serializer import (
+    PostSerializer,
+    CommentSerializer,
+    ReplySerializer,
+    PostUpdateSerializer,
+    CommentUpdateSerializer,
+)
 
 
 class PostListView(APIView, NewsFeed):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data = None
         self.tags = []
 
-    def get_object(self):
-        obj = get_list_or_404(Post)
-        return obj
-
-    def get_tags(self, request):
-        user = get_object_or_404(User, pk=request.user.pk)
-        tags = get_list_or_404(FollowTags, user_id=user.pk)
-        return tags
-
-    def get(self, request):
+    def get(self, request, post_count=100):
         # View By follow tags
-        self.get_user_tags()
+        self.get_user_tags(post_count=(int(post_count)))
+
         serializer = PostSerializer(self.data, many=True)
-        # Enable this lines to switch to normal view
-        # data = Post.objects.all()
-        # serializer = PostSerializer(data, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        request.data['user_id'] = request.user.pk
+        request.data["user_id"] = request.user.pk
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.create(serializer.validated_data)
@@ -44,7 +41,9 @@ class PostListView(APIView, NewsFeed):
 
 
 class PostDetailsView(APIView):
-    permission_classes = [IsOwner, ]
+    permission_classes = [
+        IsOwner,
+    ]
 
     def get_object(self, request, pk):
         obj = get_object_or_404(Post, pk=pk)
@@ -57,7 +56,7 @@ class PostDetailsView(APIView):
         return Response(serializer.data)
 
     def put(self, request, slug, pk):
-        serializer = PostSerializer(data=request.data)
+        serializer = PostUpdateSerializer(data=request.data)
         obj = self.get_object(request, pk)
         if serializer.is_valid():
             serializer.update(obj, serializer.validated_data)
@@ -71,6 +70,17 @@ class PostDetailsView(APIView):
 
 
 class CommentView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def post(self, request, slug, pk):
+        serializer = CommentSerializer(data=request.data, request=request)
+        if serializer.is_valid():
+            serializer.create(serializer.validated_data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentDetailView(APIView):
     permission_classes = [IsOwner]
 
     def get_object(self, pk):
@@ -78,7 +88,7 @@ class CommentView(APIView):
         return obj
 
     def put(self, request, pk):
-        serializer = CommentsSerializer(data=request.data)
+        serializer = CommentUpdateSerializer(data=request.data)
         obj = self.get_object(pk)
         if serializer.is_valid():
             serializer.update(obj, serializer.validated_data)
@@ -90,4 +100,35 @@ class CommentView(APIView):
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# TODO Create and update, delete reply
+
+class RelpyView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly and IsOwner]
+
+    def get_object(self, pk):
+        obj = get_object_or_404(Reply, id=pk)
+        return obj
+
+    def get(self, request, pk):
+        obj = self.get_object(pk)
+        serializer = ReplySerializer(obj)
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        serializer = ReplySerializer(request=request, data=request.data)
+        if serializer.is_valid():
+            serializer.create(serializer.validated_data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        obj = self.get_object(pk)
+        serializer = ReplySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(obj, serializer.validated_data)
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        obj = self.get_object(pk)
+        obj.delete()
+        return Response(status=status.HTTP_201_CREATED)
