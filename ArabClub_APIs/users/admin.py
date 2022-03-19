@@ -6,16 +6,17 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from newsfeed.models import FollowTags
-from users.models import (
-    User,
-    FirstNameAndLastName,
+from tag_system.models import FollowTag
+from users.models import User
+from user_profile.models import (
+    Name,
     Phone,
     Skills,
     Address,
     Bio,
     GitHubAccount,
 )
+
 
 
 class UserCreationFrom(forms.ModelForm):
@@ -94,7 +95,7 @@ class UserAddNamesForm(admin.TabularInline):
     Form for user add first name and last name
     """
 
-    model = FirstNameAndLastName
+    model = Name
 
 
 class UserPhone(admin.TabularInline):
@@ -138,7 +139,7 @@ class UserGitHub(admin.TabularInline):
 
 
 class UserFollowTags(admin.TabularInline):
-    model = FollowTags
+    model = FollowTag
 
 
 class UserAdmin(BaseUserAdmin):

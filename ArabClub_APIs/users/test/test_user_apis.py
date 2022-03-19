@@ -1,26 +1,13 @@
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
-from users.serializers import (
-    PhoneSerializer,
+
+from user_profile.models import (
     Phone,
-    GitHubAccount,
-    GitHubSerializer,
-    Skills,
-    SkillsSerializer,
-    Address,
-    AddressSerializer,
-    Bio,
-    BioSerializer,
-    NameSerializer,
-    FirstNameAndLastName,
-)
-from users.models import (
-    Phone,
+    Name,
     Skills,
     GitHubAccount,
     Bio,
-    FirstNameAndLastName,
     Address,
 )
 
@@ -34,10 +21,10 @@ change/update user data with out owner
 """
 
 urls = {
-    "list": "/account/list",
-    "details": "/account/user/",
-    "token": "/api/token/",
-    "register": "/account/register/",
+    "list": "/api/v1/account/list",
+    "details": "/api/v1/account/user/",
+    "token": "/api/v1/token/",
+    "register": "/api/v1/account/register/",
 }
 
 
@@ -107,7 +94,8 @@ class CreateUserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_add_more_data_with_aut(self):
-        data = {"skills": {"skill_name": "Python"}, "phone": {"phone": "01066373279"}}
+        data = {"skills": {"skill": "Python,"},
+                "phone": {"phone": "01066373279"}}
         url = f'{urls["details"]}{self.user.username}/'
 
         response = self.client.put(
@@ -117,10 +105,10 @@ class CreateUserTestCase(APITestCase):
         phone = Phone.objects.get(user_id=self.user.id)
         skills = Skills.objects.get(user_id=self.user.id)
         self.assertEqual(str(phone), data["phone"]["phone"])
-        self.assertEqual(str(skills), data["skills"]["skill_name"])
+        self.assertEqual(str(skills), data["skills"]["skill"])
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(phone.phone, data["phone"]["phone"])
-        self.assertEqual(skills.skill_name, data["skills"]["skill_name"])
+        self.assertEqual(skills.skill, data["skills"]["skill"])
 
     def test_change_data_with_auth(self):
         data = {"phone": {"phone": "01120393742"}}
@@ -142,10 +130,10 @@ class CreateUserTestCase(APITestCase):
             "email": "islam@admin.arabclub",
             "date_of_birth": "1998-7-13",
             "bio": {"bio": "python, Django"},
-            "skills": {"skill_name": "python, Django"},
-            "github_url": {"url": "https://github.cosm/"},
+            "skills": {"skill": "python,Django,"},
+            "github": {"github": "islam-kamel"},
             "phone": {"phone": "01066373457"},
-            "address": {"country": "Egyp", "city": "qus", "street_name": "Qus"},
+            "address": {"country": "Egypt", "city": "qus"},
         }
         url = f'{urls["details"]}{self.user.username}/'
         response = self.client.put(
@@ -156,52 +144,22 @@ class CreateUserTestCase(APITestCase):
         skills = Skills.objects.get(user_id=self.user.id)
         github = GitHubAccount.objects.get(user_id=self.user.id)
         address = Address.objects.get(user_id=self.user.id)
-        name = FirstNameAndLastName.objects.get(user_id=self.user.id)
+        name = Name.objects.get(user_id=self.user.id)
         bio = Bio.objects.get(user_id=self.user.id)
 
         full_address = (
-            f'{data["address"]["street_name"]}, '
-            f'{data["address"]["city"]}, '
-            f'{data["address"]["country"]}'
+            f'{data["address"]["city"].title()}, '
+            f'{data["address"]["country"].title()}'
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(str(phone), data["phone"]["phone"])
-        self.assertEqual(str(skills), data["skills"]["skill_name"])
-        self.assertEqual(str(github), data["github_url"]["url"])
+        self.assertEqual(str(skills), data["skills"]["skill"].title())
+        self.assertEqual(str(github), f'https://github.com/'
+                                      f'{data["github"]["github"]}')
         self.assertEqual(address.get_full_address, full_address)
         self.assertEqual(name.first_name, data["name"]["first_name"])
         self.assertEqual(name.last_name, data["name"]["last_name"])
         self.assertEqual(str(bio), data["bio"]["bio"])
-
-        phone = {"phone": {"phone": "01120393742"}}
-
-        instance = Phone.objects.get(user_id=self.user.id)
-        PhoneSerializer.update(self, instance=instance, validated_data=phone)
-
-        address = {"address": {"country": "egypt"}}
-
-        instance = Address.objects.get(user_id=self.user.id)
-        AddressSerializer.update(self, instance=instance, validated_data=address)
-
-        skills = {"skills": {"skill_name": "Docker"}}
-
-        instance = Skills.objects.get(user_id=self.user.id)
-        SkillsSerializer.update(self, instance=instance, validated_data=skills)
-
-        github = {"github_url": {"url": "https://www.github.com/user"}}
-
-        instance = GitHubAccount.objects.get(user_id=self.user.id)
-        GitHubSerializer.update(self, instance=instance, validated_data=github)
-
-        name = {"name": {"first_name": "Whiskey"}}
-
-        instance = FirstNameAndLastName.objects.get(user_id=self.user.id)
-        NameSerializer.update(self, instance=instance, validated_data=name)
-
-        bio = {"bio": {"bio": "Hello Friend"}}
-
-        instance = Bio.objects.get(user_id=self.user.id)
-        BioSerializer.update(self, instance=instance, validated_data=bio)
 
     def test_validator_username(self):
         url = f'{urls["details"]}{self.user.username}/'
