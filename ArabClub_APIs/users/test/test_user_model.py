@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from users.models import (
-    FirstNameAndLastName,
+from user_profile.models import (
+    Name,
     Phone,
     GitHubAccount,
     Address,
@@ -37,8 +37,6 @@ class UserTestCase(TestCase):
         self.assertEqual(str(superuser), "super.case")
         self.assertTrue(superuser.is_staff, True)
 
-        print("-" * 5, "Create User Test")
-
 
 class UserRelationsTest(TestCase):
     def setUp(self):
@@ -50,11 +48,9 @@ class UserRelationsTest(TestCase):
             password="123456",
         )
 
-        self.names = FirstNameAndLastName
+        self.names = Name
 
     def test_user_add_info(self):
-        print("-" * 5, "Info Relations Ship")
-
         user = self.user.objects.get(username="test.case2")
 
         """
@@ -83,37 +79,32 @@ class UserRelationsTest(TestCase):
         """
         user skills
         """
-        s1 = Skills.objects.create(skill_name="python1", user_id=user.pk)
-
-        self.assertEqual(str(s1), "python1")
+        s1 = Skills.objects.create(skill="python1,", user_id=user.pk)
+        self.assertEqual(str(s1), "Python1,")
 
         """
         User Address
         """
         country = "Egypt"
         city = "Qena"
-        street_name = "Qus"
-        full_address = f"{street_name}, {city}, {country}"
+        full_address = f"{city}, {country}"
 
         address = Address.objects.create(
-            country=country, city=city, street_name=street_name, user_id=user.pk
+            country=country, city=city, user_id=user.pk
         )
 
         self.assertEqual(str(address), country)
         self.assertEqual(address.country, country)
         self.assertEqual(address.city, city)
-        self.assertEqual(address.street_name, street_name)
         self.assertEqual(address.get_full_address, full_address)
 
         """
         user github account
         """
-        url = "https://docs.djangoproject.com"
-        github = GitHubAccount.objects.create(url=url, user_id=user.pk)
+        url = "islam-kamel"
+        github = GitHubAccount.objects.create(github=url, user_id=user.pk)
 
-        self.assertEqual(str(github), url)
-        self.assertEqual(github.url, url)
-
+        self.assertEqual(str(github), f'https://github.com/{url}')
         """
         Relations Models Test
         """
@@ -121,15 +112,15 @@ class UserRelationsTest(TestCase):
         s1 = Skills.objects.get(user_id=user.pk)
         address = Address.objects.get(user_id=user.pk)
         bio = Bio.objects.get(user_id=user.pk)
-        names = FirstNameAndLastName.objects.get(user_id=user.pk)
+        names = Name.objects.get(user_id=user.pk)
         github = GitHubAccount.objects.get(user_id=user.pk)
 
         self.assertEqual(phone.phone, "01066373279")
-        self.assertEqual(s1.skill_name, "python1")
+        self.assertEqual(s1.skill, "Python1,")
         self.assertEqual(address.country, "Egypt")
         self.assertEqual(address.city, "Qena")
-        self.assertEqual(address.street_name, "Qus")
         self.assertEqual(bio.bio, "Hello, World!")
         self.assertEqual(names.first_name, "Test")
         self.assertEqual(names.last_name, "Case")
-        self.assertEqual(github.url, url)
+        self.assertEqual(github.github, f'https://github.com/{url}')
+

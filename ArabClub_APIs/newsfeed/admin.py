@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from newsfeed.models import Post, Tag, Comments, Reply
+from newsfeed.models import Post
+from tag_system.models import Tag
 
 
 class Tags(admin.TabularInline):
@@ -14,6 +15,3 @@ class PostAdmin(admin.ModelAdmin):
 
 admin.site.register(Tag)
 admin.site.register(Post, PostAdmin)
-admin.site.register(Comments)
-admin.site.register(Reply)
-# Register your models here.

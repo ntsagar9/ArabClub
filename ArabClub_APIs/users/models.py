@@ -2,8 +2,9 @@ import re
 
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
-from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
 
 # from newsfeed.models import Tag
 
@@ -55,8 +56,10 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     email = models.EmailField(verbose_name="Email", max_length=255, unique=True)
-    username = models.CharField(verbose_name="Username", max_length=50, unique=True)
+    username = models.CharField(verbose_name="Username", max_length=50,
+                                unique=True)
     date_of_birth = models.DateField()
+    join_date = models.DateTimeField(auto_now=timezone.now)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -83,90 +86,3 @@ class User(AbstractBaseUser):
     def is_staff(self):
         """Is the user a member of staff?"""
         return self.is_admin
-
-
-class FirstNameAndLastName(models.Model):
-    first_name = models.CharField(max_length=50, verbose_name="First Name")
-    last_name = models.CharField(max_length=50, verbose_name="Last Name")
-    user = models.OneToOneField(
-        User, related_name="name", primary_key=True, on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.first_name
-
-    @property
-    def get_full_name(self):
-        return f"{self.first_name} {self.last_name}"
-
-
-class Bio(models.Model):
-    bio = models.TextField(max_length=255, verbose_name="Bio")
-    user = models.OneToOneField(
-        User, related_name="bio", primary_key=True, on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.bio
-
-    def get_absolute_url(self):
-        user = User.objects.get(pk=self.id)
-        return reverse("bio", args=[str(user)])
-
-
-class Phone(models.Model):
-    phone = models.CharField(max_length=15, verbose_name="Phone Number")
-    user = models.OneToOneField(
-        User, related_name="phone", primary_key=True, on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.phone
-
-
-class GitHubAccount(models.Model):
-    url = models.URLField()
-    user = models.OneToOneField(
-        User, related_name="github_url", primary_key=True, on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.url
-
-
-class Skills(models.Model):
-    skill_name = models.CharField(max_length=150)
-    user = models.OneToOneField(
-        User, related_name="skills", primary_key=True, on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.skill_name
-
-
-class Address(models.Model):
-    country = models.CharField(max_length=50, verbose_name="Country")
-    city = models.CharField(max_length=50, verbose_name="City")
-    street_name = models.CharField(max_length=150, verbose_name="Street Name")
-    user = models.OneToOneField(
-        User, related_name="address", primary_key=True, on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.country
-
-    @property
-    def get_full_address(self):
-        return f"{self.street_name}, {self.city}, {self.country}"
-
-    @property
-    def get_country(self):
-        return self.country
-
-    @property
-    def get_city(self):
-        return self.city
-
-    @property
-    def get_street(self):
-        return self.street_name

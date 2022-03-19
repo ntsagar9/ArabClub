@@ -3,18 +3,19 @@ import re
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from users.models import (
-    FirstNameAndLastName,
-    Phone,
-    Bio,
-    Address,
-    GitHubAccount,
-    Skills,
+from tag_system.serializer import FollowTagsSerializers
+from user_profile.serializer import (
+    NameSerializer,
+    PhoneSerializer,
+    SkillsSerializer,
+    GitHubSerializer,
+    BioSerializer,
+    AddressSerializer,
+
 )
-from newsfeed.models import FollowTags, Tag
 
 
-def try_auto(func):
+def auto_try(func):
     def run(*args, **kwargs):
         try:
             func(*args, **kwargs)
@@ -24,143 +25,7 @@ def try_auto(func):
     return run
 
 
-class FollowTagsSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = FollowTags
-        fields = "__all__"
-
-
-# User First name and last name serializers with custom update data method
-class NameSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField(max_length=50, required=True)
-    last_name = serializers.CharField(max_length=50, required=True)
-
-    class Meta:
-        model = FirstNameAndLastName
-        fields = ["first_name", "last_name"]
-
-    def update(self, instance, validated_data):
-        try:
-            instance = FirstNameAndLastName.objects.get(user_id=instance.pk)
-        except FirstNameAndLastName.DoesNotExist:
-            return FirstNameAndLastName.objects.create(**validated_data)
-
-        instance.first_name = validated_data.get("first_name", instance.first_name)
-        instance.last_name = validated_data.get("last_name", instance.last_name)
-        instance.save()
-        return instance
-
-
-# User Bio serializers with custom update data method
-class BioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Bio
-        fields = ["bio"]
-
-    def update(self, instance, validated_data):
-        try:
-            instance = Bio.objects.get(user_id=instance.pk)
-        except Bio.DoesNotExist:
-            return Bio.objects.create(**validated_data)
-        instance.bio = validated_data.get("bio", instance.bio)
-        instance.save()
-        return instance
-
-
-# User skills serializers
-class SkillsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Skills
-        fields = ["skill_name"]
-
-    def update(self, instance, validated_data):
-        try:
-            instance = Skills.objects.get(user_id=instance.pk)
-        except Skills.DoesNotExist:
-            return Skills.objects.create(**validated_data)
-
-        instance.skill_name = validated_data.get("skill_name", instance.skill_name)
-        instance.save()
-        return instance
-
-
-# User address serializers with custom update data method
-class AddressSerializer(serializers.ModelSerializer):
-    country = serializers.CharField(max_length=50, required=False)
-    city = serializers.CharField(max_length=50, required=False)
-    street_name = serializers.CharField(max_length=150, required=False)
-
-    class Meta:
-        model = Address
-        fields = ["country", "city", "street_name"]
-
-    def update(self, instance, validated_data):
-        try:
-            instance = Address.objects.get(user_id=instance.pk)
-        except Address.DoesNotExist:
-            instance = Address.objects.create(**validated_data)
-            return instance
-        instance.country = validated_data.get("country", instance.country)
-        instance.city = validated_data.get("city", instance.city)
-        instance.street_name = validated_data.get("street_name", instance.street_name)
-        instance.save()
-        return instance
-
-
-# User GitHub Account serializers
-class GitHubSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GitHubAccount
-        fields = ["url"]
-
-    def update(self, instance, validated_data):
-        try:
-            instance = GitHubAccount.objects.get(user_id=instance.pk)
-        except GitHubAccount.DoesNotExist:
-            return GitHubAccount.objects.create(**validated_data)
-
-        instance.url = validated_data.get("url", instance.url)
-        instance.save()
-        return instance
-
-
-# User phone number serializers
-class PhoneSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Phone
-        fields = ["phone"]
-
-    def validate_phone(self, phone):
-        pattern = r"[0-9]{11,15}"
-        re.compile(pattern)
-        if re.fullmatch(pattern, phone):
-            return phone
-        raise serializers.ValidationError(
-            "Please enter your phone number " "correctly."
-        )
-
-    def update(self, instance, validated_data):
-        try:
-            instance = Phone.objects.get(user_id=instance.pk)
-        except Phone.DoesNotExist:
-            return Phone.objects.create(**validated_data)
-
-        instance.phone = validated_data.get("phone", instance.phone)
-        instance.save()
-        return instance
-
-
 class UserSerializer(serializers.ModelSerializer):
-    """
-    This is main serializer
-    return:
-    user info
-    bio
-    phone
-    skills
-    GitHub
-    """
-
     bio = BioSerializer(required=False)
     phone = PhoneSerializer(required=False)
     skills = SkillsSerializer(required=False)
@@ -169,26 +34,18 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=False)
     email = serializers.EmailField(required=False)
     date_of_birth = serializers.DateField(required=False)
-    github_url = GitHubSerializer(required=False)
-    follow_tags = serializers.StringRelatedField(many=True)
+    github = GitHubSerializer(required=False)
+    follow_tag = FollowTagsSerializers(required=False, many=True)
 
     class Meta:
         model = get_user_model()
         fields = [
-            "id",
-            "name",
-            "username",
-            "email",
-            "date_of_birth",
-            "bio",
-            "skills",
-            "github_url",
-            "phone",
-            "address",
-            "follow_tags",
+            "id", "name", "username", "email", "date_of_birth", "bio",
+            "skills", "github", "phone", "address", "follow_tag",
         ]
 
-    def validate_username(self, username):
+    @staticmethod
+    def validate_username(username):
         pattern = re.compile(
             r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
         )
@@ -209,60 +66,81 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
     def other(self, instance, validated_data):
-        self.update_name(instance, validated_data)
-        self.update_bio(instance, validated_data)
-        self.update_skills(instance, validated_data)
-        self.update_address(instance, validated_data)
-        self.update_phone(instance, validated_data)
-        self.update_github_url(instance, validated_data)
+        for k in [*validated_data]:
+            match k:
+                case 'follow_tag':
+                    self.update_follow_tag(instance, validated_data[k])
+                case 'name':
+                    self.update_name(instance, validated_data[k])
+                case 'bio':
+                    self.update_bio(instance, validated_data[k])
+                case 'phone':
+                    self.update_phone(instance, validated_data[k])
+                case 'github':
+                    self.update_github_url(instance, validated_data[k])
+                case 'address':
+                    self.update_address(instance, validated_data[k])
+                case 'skills':
+                    self.update_skills(instance, validated_data[k])
 
-    @try_auto
+    @auto_try
     def update_github_url(self, instance, validated_data):
-        validated_data = {
-            "url": validated_data["github_url"]["url"],
-            "user_id": instance.id,
-        }
-        GitHubSerializer.update(self, instance, validated_data)
+        serializer = GitHubSerializer(data=validated_data)
+        if serializer.is_valid():
+            serializer.update(instance, serializer.validated_data)
 
-    @try_auto
+    @auto_try
     def update_phone(self, instance, validated_data):
-        validated_data = {
-            "phone": validated_data["phone"]["phone"],
-            "user_id": instance.id,
-        }
-        PhoneSerializer.update(self, instance, validated_data)
+        serializer = PhoneSerializer(data=validated_data)
+        if serializer.is_valid():
+            serializer.update(instance, serializer.validated_data)
+        return serializer.errors
 
-    @try_auto
+    @auto_try
     def update_address(self, instance, validated_data):
-        validated_data = {
-            "country": validated_data["address"]["country"],
-            "city": validated_data["address"]["city"],
-            "street_name": validated_data["address"]["street_name"],
-            "user_id": instance.id,
-        }
-        AddressSerializer.update(self, instance, validated_data)
+        serializer = AddressSerializer(data=validated_data)
+        if serializer.is_valid():
+            serializer.update(instance, serializer.validated_data)
+        return serializer.errors
 
-    @try_auto
+    @auto_try
     def update_skills(self, instance, validated_data):
-        validated_data = {
-            "skill_name": validated_data["skills"]["skill_name"],
-            "user_id": instance.id,
-        }
-        SkillsSerializer.update(self, instance, validated_data)
+        serializer = SkillsSerializer(data=validated_data)
+        if serializer.is_valid():
+            serializer.update(instance, serializer.validated_data)
+        return serializer.errors
 
-    @try_auto
+    @auto_try
     def update_bio(self, instance, validated_data):
-        validated_data = {"bio": validated_data["bio"]["bio"], "user_id": instance.id}
-        BioSerializer.update(self, instance, validated_data)
+        serializer = BioSerializer(data=validated_data)
+        if serializer.is_valid():
+            serializer.update(instance, serializer.validated_data)
+        return serializer.errors
 
-    @try_auto
+    @auto_try
     def update_name(self, instance, validated_data):
-        validated_data = {
-            "first_name": validated_data["name"]["first_name"],
-            "last_name": validated_data["name"]["last_name"],
-            "user_id": instance.id,
-        }
-        NameSerializer.update(self, instance, validated_data)
+        serializer = NameSerializer(data=validated_data)
+        if serializer.is_valid():
+            serializer.update(instance, serializer.validated_data)
+        else:
+            raise serializer.errors
+
+    @auto_try
+    def update_follow_tag(self, instance, validated_data):
+        data = [{key: tag[key].pk} for tag in validated_data for key in tag]
+        serializer = FollowTagsSerializers(data=data, many=True)
+        if serializer.is_valid():
+            serializer.update(instance, serializer.validated_data)
+            return serializer.data
+        return serializer.errors
+
+
+class UserShortSerializer(serializers.ModelSerializer):
+    name = NameSerializer(required=False)
+
+    class Meta:
+        model = get_user_model()
+        fields = ['pk', 'name']
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
