@@ -8,7 +8,8 @@ from newsfeed.models import Post
 from newsfeed.permissions import IsOwner
 from newsfeed.serializer import (
     PostSerializer,
-    PostUpdateSerializer
+    PostUpdateSerializer,
+    PostListSerializer
 )
 
 
@@ -24,7 +25,7 @@ class PostListView(APIView):
         # self.get_user_tags(post_count=(int(post_count)))
         obj = self.get_queryset()
 
-        serializer = PostSerializer(obj, many=True)
+        serializer = PostListSerializer(obj, many=True)
         return Response(serializer.data)
 
     def post(self, request):

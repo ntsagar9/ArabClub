@@ -1,6 +1,7 @@
 from django.db import models
-from django.utils import timezone
 from django.urls import reverse
+from django.utils import timezone
+
 from newsfeed.models import Post
 from users.models import User
 
@@ -22,7 +23,6 @@ class Comment(models.Model):
     def get_absolute_url(self):
         return reverse('newsfeed:comment_sys:create_comment',
                        args=[self.post.slug, self.post.pk])
-
 
 
 class Reply(models.Model):

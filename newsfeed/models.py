@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 
+# from comments_system.models import Comment
 from users.models import User
 
 STATUS_CHOICES = (
@@ -33,8 +34,10 @@ class Post(models.Model):
             "newsfeed:post_details", args=[self.slug, self.pk]
         )
 
+    def get_total_comments(self):
+        total = Comment.objects.filter(post_id=self.id).count()
+        return total
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
-
-
