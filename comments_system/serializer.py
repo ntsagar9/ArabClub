@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import serializers
 
 from comments_system.models import (Comment, Reply)
@@ -5,32 +6,16 @@ from users.serializers import UserShortSerializer
 
 
 class ReplySerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    comment = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    def __init__(self, instance=None, request=None, **kwargs):
-        self.request = request
-        if not len(kwargs):
-            super(ReplySerializer, self).__init__(instance)
-        else:
-            super(ReplySerializer, self).__init__(**kwargs)
+    # user = UserShortSerializer(read_only=True)
+    # # comment = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Reply
-        fields = ["pk", "reply", "comment", "user_id"]
+        fields = ["pk", "reply", "comment", "user"]
 
     def create(self, validated_data):
-        path = self.request.path.split("/")
-        if self.request is not None:
-            try:
-                obj = Reply.objects.create(
-                    **validated_data, user_id=self.request.user.pk,
-                    comment_id=path[-1]
-                )
-                return obj
-            except django.db.utils.IntegrityError:
-                raise serializers.ValidationError("Comment Not Found 404.")
-        raise serializers.ValidationError("Please give me request.!")
+        reply = Reply.objects.create(**validated_data)
+        return reply
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -53,14 +38,6 @@ class CommentSerializer(serializers.ModelSerializer):
             "replys_comment",
         ]
 
-    def update(self, instance, validated_data):
-        instance.post_comment_fk = validated_data.get(instance.post_id)
-        instance.user_comment_fk = validated_data.get(instance.user_id)
-        instance.comment = validated_data.get("comment", instance.comment)
-        instance.update_at = timezone.now()
-        instance.save()
-        return instance
-
     def create(self, validated_data):
         obj = Comment.objects.create(**validated_data,
                                      user_id=self.request.user.pk)
@@ -79,5 +56,6 @@ class CommentUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.comment = validated_data.get("comment", instance.comment)
+        instance.update_at = timezone.now()
         instance.save()
         return instance

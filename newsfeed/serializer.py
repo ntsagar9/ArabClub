@@ -3,6 +3,7 @@ from rest_framework import serializers
 from comments_system.serializer import CommentSerializer
 from newsfeed.models import Post
 from tag_system.serializer import TagsSerializer
+from users.serializers import UserShortSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -49,3 +50,13 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         instance.content = validated_data.get("content", instance.content)
         instance.save()
         return instance
+
+
+class PostListSerializer(serializers.ModelSerializer):
+    user = UserShortSerializer(read_only=True)
+    post_comments = Post.get_total_comments
+
+    class Meta:
+        model = Post
+        fields = ['pk', 'title', 'content', 'published_at', 'slug', 'user',
+                  'post_comments']
