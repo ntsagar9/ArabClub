@@ -22,7 +22,7 @@ class CommentTestCase(APITestCase):
             "username": "user_test_case",
             "email": "user@test.case.com",
             "date_of_birth": "1998-7-13",
-            "password": "123",
+            "password": "1234",
         }
         self.user = user_model.objects.create_user(**user_data)
         self.client = APIClient()
