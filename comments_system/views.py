@@ -71,7 +71,6 @@ class RelpyView(APIView):
 
     def post(self, request, pk):
         self.add_required_fields(pk, request)
-        print(request.data)
         serializer = ReplySerializer(data=request.data)
         if serializer.is_valid():
             serializer.create(serializer.validated_data)
