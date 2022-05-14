@@ -103,7 +103,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'arabclub_db',
         'USER': 'postgres',
-        'PASSWORD': '123',
+        'PASSWORD': 'whiskey',
         'HOST': 'localhost',
         'PORT': '5432',
     }
