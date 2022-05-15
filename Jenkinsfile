@@ -41,8 +41,11 @@ pipeline {
 //                 bat 'git remote add origin https://github.com/islam-kamel/ArabClubDeploy.git'
 //                 bat 'git remote set-url origin https://github.com/islam-kamel/ArabClubDeploy.git'
 //                 bat 'git fetch origin main'
-//                 bat 'git commit -m "Jenkins Automate build-id: %BUILD_NUMBER% :rocket:"'
+                bat 'git add .'
+                bat 'git commit -m "Jenkins Automate build-id: %BUILD_NUMBER% :rocket:"'
+                bat 'git merge FETCH_HEAD'
                 bat 'git push origin main'
+
             }
 
         }
