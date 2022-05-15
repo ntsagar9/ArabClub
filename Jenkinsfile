@@ -7,15 +7,31 @@ pipeline {
                 bat 'python -m venv env'
                 bat 'env/Scripts/activate'
                 bat 'pip install -r requirements.txt'
+                bat 'python manage.py makemigrations'
+                bat 'python manage.py migrate'
 
             }
         }
         stage('Testing') {
             steps {
-                bat 'python manage.py makemigrations'
-                bat 'python manage.py migrate'
                 bat 'coverage  run --omit="*/env/*" manage.py test'
                 bat 'coverage html'
+                bat 'coverage xml -o reports/coverage.xml'
+            }
+            post{
+                always{
+                    step([$class: 'CoberturaPublisher',
+                                   autoUpdateHealth: false,
+                                   autoUpdateStability: false,
+                                   coberturaReportFile: 'reports/coverage.xml',
+                                   failNoReports: false,
+                                   failUnhealthy: false,
+                                   failUnstable: false,
+                                   maxNumberOfBuilds: 10,
+                                   onlyStable: false,
+                                   sourceEncoding: 'ASCII',
+                                   zoomCoverageChart: false])
+                }
             }
         }
         stage('Deploy') {
