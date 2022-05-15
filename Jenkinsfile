@@ -37,12 +37,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 bat 'git remote remove origin'
-//                 bat 'git remote add origin https://github.com/islam-kamel/ArabClubDeploy.git'
-                bat 'git remote set-url origin https://github.com/islam-kamel/ArabClubDeploy.git'
-                bat 'git pull origin main'
-                bat 'git add -u'
+                bat 'git remote add origin https://github.com/islam-kamel/ArabClubDeploy.git'
+//                 bat 'git remote set-url origin https://github.com/islam-kamel/ArabClubDeploy.git'
+                bat 'git fetch origin main'
                 bat 'git commit -m "Jenkins Automate build-id: %BUILD_NUMBER% :rocket:"'
-                bat 'git push origin main --force'
+                bat 'git push origin main'
             }
 
         }
