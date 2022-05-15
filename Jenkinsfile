@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                git branch: 'main', url: 'https://github.com/islam-kamel/ArabClub.git'
+                git branch: 'main', url: 'https://github.com/islam-kamel/ArabClubDeploy.git'
                 bat 'python -m venv env'
                 bat 'env/Scripts/activate'
                 bat 'pip install -r requirements.txt'
@@ -14,6 +14,7 @@ pipeline {
         }
         stage('Testing') {
             steps {
+                bat 'git fetch https://github.com/islam-kamel/ArabClub.git'
                 bat 'coverage  run --omit="*/env/*" manage.py test'
                 bat 'coverage html'
                 bat 'coverage xml -o reports/coverage.xml'
@@ -36,11 +37,11 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                bat 'git remote remove origin'
-                bat 'git remote add origin https://github.com/islam-kamel/ArabClubDeploy.git'
+//                 bat 'git remote remove origin'
+//                 bat 'git remote add origin https://github.com/islam-kamel/ArabClubDeploy.git'
 //                 bat 'git remote set-url origin https://github.com/islam-kamel/ArabClubDeploy.git'
-                bat 'git fetch origin main'
-                bat 'git commit -m "Jenkins Automate build-id: %BUILD_NUMBER% :rocket:"'
+//                 bat 'git fetch origin main'
+//                 bat 'git commit -m "Jenkins Automate build-id: %BUILD_NUMBER% :rocket:"'
                 bat 'git push origin main'
             }
 
