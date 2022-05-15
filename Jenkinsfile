@@ -1,20 +1,16 @@
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
+        stage('Build') {
             steps {
                 git branch: 'main', url: 'https://github.com/islam-kamel/ArabClub.git'
-            }
-        }
-        stage('Create Environment') {
-            steps {
                 bat 'python -m venv env'
                 bat 'env/Scripts/activate'
                 bat 'pip install -r requirements.txt'
 
             }
         }
-        stage('Build') {
+        stage('Testing') {
             steps {
                 bat 'python manage.py makemigrations'
                 bat 'python manage.py migrate'
@@ -37,7 +33,7 @@ pipeline {
     }
     post {
         always {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'htmlcov', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: './htmlcov', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: ''])
         }
     }
 }
