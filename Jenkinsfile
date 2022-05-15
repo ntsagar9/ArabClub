@@ -37,7 +37,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 bat 'git remote remove origin'
-                bat 'git remote add origin https://github.com/islam-kamel/ArabClubDeploy.git'
+//                 bat 'git remote add origin https://github.com/islam-kamel/ArabClubDeploy.git'
                 bat 'git remote set-url origin https://github.com/islam-kamel/ArabClubDeploy.git'
                 bat 'git pull origin main'
                 bat 'git add -u'
