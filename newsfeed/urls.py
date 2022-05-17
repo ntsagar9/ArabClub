@@ -8,9 +8,12 @@ from newsfeed.views import (
 app_name = "newsfeed"
 
 urlpatterns = [
-    re_path(r"(?:limit=(?P<post_count>\d+)/)?$", PostListView.as_view(),
+    # Get posts with limit posts count or get all posts by default count
+    re_path(r"(?:limit=(?P<count>\d+)/)?$", PostListView.as_view(),
             name="post_list"),
-    path("<str:slug>-<int:pk>", PostDetailsView.as_view(), name="post_details"),
+
+    path("<str:slug>-<int:pk>", PostDetailsView.as_view(),
+         name="post_details"),
 
     # Comment Sys Urls
     path('comment/', include('comments_system.urls'))

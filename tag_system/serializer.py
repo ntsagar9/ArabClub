@@ -1,10 +1,8 @@
 from rest_framework import serializers
-
 from tag_system.models import Tag, FollowTag
 
 
 class TagsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Tag
         fields = '__all__'
@@ -18,6 +16,7 @@ class FollowTagListSerializer(serializers.ListSerializer):
         obj = FollowTag.objects.filter(user_id=instance.pk)
         return obj
 
+
     def update(self, instance, validated_data):
         obj = self.get_related(instance)
         for i in validated_data:
@@ -27,7 +26,6 @@ class FollowTagListSerializer(serializers.ListSerializer):
 
 
 class FollowTagsSerializers(serializers.ModelSerializer):
-
     class Meta:
         model = FollowTag
         fields = ['tag_id', 'tag']

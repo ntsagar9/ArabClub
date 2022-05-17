@@ -4,9 +4,10 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
-
+from logging_manager import eventslog
+import traceback
 # from newsfeed.models import Tag
+logger = eventslog.logger
 
 
 class CustomUserManager(BaseUserManager):
@@ -21,12 +22,14 @@ class CustomUserManager(BaseUserManager):
         """
 
         if not email:
+            logger.error(_("The Email must be set."))
             raise ValueError(_("The Email must be set."))
 
         pattern = re.compile(
             r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
         )
         if not re.fullmatch(pattern, username):
+            logger.error(_('Enter Valid Username'))
             raise ValueError(_("Enter Valid Username"))
 
         user = self.model(
@@ -55,7 +58,8 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    email = models.EmailField(verbose_name="Email", max_length=255, unique=True)
+    email = models.EmailField(verbose_name="Email", max_length=255,
+                              unique=True)
     username = models.CharField(verbose_name="Username", max_length=50,
                                 unique=True)
     date_of_birth = models.DateField()
@@ -73,12 +77,12 @@ class User(AbstractBaseUser):
         return self.username
 
     def has_perm(self, perm, obj=None):
-        "Does the user have a specific permission?"
+        """Does the user have a specific permission?"""
         # Simplest possible answer: Yes, always
         return True
 
     def has_module_perms(self, app_label):
-        "Does the user have permissions to view the app `app_label`?"
+        """Does the user have permissions to view the app `app_label`?"""
         # Simplest possible answer: Yes, always
         return True
 

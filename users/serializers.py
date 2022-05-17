@@ -13,19 +13,29 @@ from user_profile.serializer import (
     AddressSerializer,
 
 )
+from logging_manager import eventslog
+logger = eventslog.logger
 
 
 def auto_try(func):
+    """
+    Exception any errors
+    """
     def run(*args, **kwargs):
         try:
             func(*args, **kwargs)
         except Exception as e:
+            logger.error(e)
             return e
-
     return run
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Update all information for users from one end point
+    this class can call all related others classes with 'other func'
+    each class is responsible for updating the information about
+    """
     bio = BioSerializer(required=False)
     phone = PhoneSerializer(required=False)
     skills = SkillsSerializer(required=False)
@@ -47,25 +57,31 @@ class UserSerializer(serializers.ModelSerializer):
     @staticmethod
     def validate_username(username):
         pattern = re.compile(
-            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
+            r"^[a-zA](?=[a-zA-Z\d._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
         )
 
         if re.fullmatch(pattern, username):
             return username
-
         raise serializers.ValidationError("Enter valid username ex. xxxx.xxxx")
 
     def update(self, instance, validated_data):
+        """
+        Update main information for each user
+        """
         instance.username = validated_data.get("username", instance.username)
         instance.email = validated_data.get("email", instance.email)
         instance.date_of_birth = validated_data.get(
             "date_of_birth", instance.date_of_birth
         )
+        # updating other information
         self.other(instance, validated_data)
         instance.save()
         return instance
 
     def other(self, instance, validated_data):
+        """
+        Can update other information if request include other information
+        """
         for k in [*validated_data]:
             match k:
                 case 'follow_tag':
@@ -83,11 +99,13 @@ class UserSerializer(serializers.ModelSerializer):
                 case 'skills':
                     self.update_skills(instance, validated_data[k])
 
+    # Every function responsible is update its part from information
     @auto_try
     def update_github_url(self, instance, validated_data):
         serializer = GitHubSerializer(data=validated_data)
         if serializer.is_valid():
             serializer.update(instance, serializer.validated_data)
+        return serializer.errors
 
     @auto_try
     def update_phone(self, instance, validated_data):
@@ -157,7 +175,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
     def validate_username(self, username):
         pattern = re.compile(
-            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
+            r"^[a-zA](?=[a-zA-Z\d._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
         )
 
         if re.fullmatch(pattern, username):

@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
@@ -25,27 +25,38 @@ from rest_framework_simplejwt.views import (
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Snippets API",
+        title="ArabClub API Documentation",
         default_version='v1',
-        description="Test description",
+        description="""
+        This is just a project to apply an idea 
+        that might one day be a pride for all Arab developers 😊.
+        """,
         terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
+        contact=openapi.Contact(email="islam.kamel@agr.svu.edu.eg"),
         license=openapi.License(name="BSD License"),
     ),
-    public=True,
-
-    permission_classes=[permissions.AllowAny],
-
+    # public=True,
+    # permission_classes=[permissions.AllowAny],
 )
 
+api_version = 'api/v1/'
+
 urlpatterns = [
-    path('api/v1/posts/', include('newsfeed.urls'), name='home'),
+    path('{}posts/'.format(api_version),
+         include('newsfeed.urls'), name='home'),
+
     path('admin/', admin.site.urls),
-    path('api/v1/account/', include('users.urls')),
-    path('api/v1/token/', TokenObtainPairView.as_view(),
+
+    path('{}account/'.format(api_version), include('users.urls')),
+
+    path('{}token/'.format(api_version), TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
-    path('api/v1/token/refresh/', TokenRefreshView.as_view(),
+
+    path('{}token/refresh/'.format(api_version), TokenRefreshView.as_view(),
          name='token_refresh'),
-    path('api', schema_view.with_ui('redoc', cache_timeout=0),
-         name='schema-redoc')
+
+    # path('', schema_view.with_ui('swagger', cache_timeout=0),
+    #      name='schema-swagger-ui'),
+    re_path(r'^$', schema_view.with_ui('swagger', cache_timeout=0),
+            name='schema-swagger-ui')
 ]

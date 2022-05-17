@@ -165,8 +165,27 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication'
     ]
 }
+# 'SECURITY_DEFINITIONS': {
+#     'api_key': {
+#         'type': 'apiKey',
+#         'in': 'header',
+#         'name': 'Authorization',
+#         "description": "JWT authorization"
+#     }
+SWAGGER_SETTINGS = {
+    'SUPPORTED_SUBMIT_METHODS': ['put', 'post', 'get', 'delete'],
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+            "description": "JWT authorization"
+        },
 
 
+    },
+
+}
 # Simple JWT Settings
 
 SIMPLE_JWT = {

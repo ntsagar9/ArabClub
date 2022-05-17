@@ -15,15 +15,17 @@ urls = {
 }
 user_model = get_user_model()
 
+user_data = {
+    "username": "user_test_case",
+    "email": "user@test.case.com",
+    "date_of_birth": "1998-7-13",
+    "password": "123",
+}
+
 
 class CommentTestCase(APITestCase):
     def setUp(self) -> None:
-        user_data = {
-            "username": "user_test_case",
-            "email": "user@test.case.com",
-            "date_of_birth": "1998-7-13",
-            "password": "123",
-        }
+
         self.user = user_model.objects.create_user(**user_data)
         self.client = APIClient()
 
@@ -55,11 +57,12 @@ class CommentTestCase(APITestCase):
 
         self.response = self.client.post(self.url, data=data, format='json',
                                          HTTP_AUTHORIZATION=self.token)
-        # print(response.data)
         self.comment = Comment.objects.all().first()
+
 
     def test_create_comment(self):
         self.assertEqual(self.response.status_code, 201)
+
 
     def test_update_comment(self):
         data = {
@@ -67,19 +70,15 @@ class CommentTestCase(APITestCase):
         }
         url = f'{urls["update_comment"]}{self.comment.pk}'
         response = self.client.put(url, data=data,
-                                   HTTP_AUTHORIZATION=self.token, format='json')
+                                   HTTP_AUTHORIZATION=self.token,
+                                   format='json')
         self.assertEqual(response.status_code, 202)
 
 
 class ReplayTestCase(APITestCase):
     def setUp(self) -> None:
-        user_data = {
-            "username": "user_test_case",
-            "email": "user@test.case.com",
-            "date_of_birth": "1998-7-13",
-            "password": "123",
-        }
         self.user = user_model.objects.create_user(**user_data)
+
         self.client = APIClient()
 
         data = {"username": self.user.username, "password": "123"}
@@ -122,8 +121,10 @@ class ReplayTestCase(APITestCase):
         self.reply_response = self.client.post(url, data=data, format='json',
                                                HTTP_AUTHORIZATION=self.token)
 
+
     def test_create(self):
         self.assertEqual(self.reply_response.status_code, 201)
+
 
     def test_update(self):
         data = {
@@ -133,11 +134,12 @@ class ReplayTestCase(APITestCase):
         obj = Reply.objects.all().first()
         url = f'{urls["reply"]}{obj.pk}'
         response = self.client.put(url, data=data, format='json',
-                                    HTTP_AUTHORIZATION=self.token)
+                                   HTTP_AUTHORIZATION=self.token)
 
         self.assertEqual(response.status_code, 201)
         obj = Reply.objects.all().first()
         self.assertEqual(obj.reply, data['reply'])
+
 
     def test_delete(self):
         obj = Reply.objects.all().first()

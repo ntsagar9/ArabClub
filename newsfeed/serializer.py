@@ -7,6 +7,7 @@ from users.serializers import UserShortSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):
+    """ posts custom serializer with include tags and some user information """
     post_tags = TagsSerializer(many=True, read_only=True)
     post_comments = CommentSerializer(many=True, read_only=True)
     user_id = serializers.IntegerField(required=True)
@@ -33,11 +34,9 @@ class PostSerializer(serializers.ModelSerializer):
                                    slug=title.replace(" ", "-"))
         return post
 
-    def update(self, instance, validated_data):
-        instance.content = validated_data.get("content", instance.content)
-
 
 class PostUpdateSerializer(serializers.ModelSerializer):
+    """ Post serializer for only update post date"""
     title = serializers.CharField(required=False)
     content = serializers.CharField(required=False)
 
@@ -53,10 +52,11 @@ class PostUpdateSerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(serializers.ModelSerializer):
+    """ Post list serializer with limit data to optimize response"""
     user = UserShortSerializer(read_only=True)
     post_comments = Post.get_total_comments
 
     class Meta:
         model = Post
-        fields = ['pk', 'title', 'content', 'published_at', 'slug', 'user',
+        fields = ['pk', 'title', 'published_at', 'slug', 'user',
                   'post_comments']

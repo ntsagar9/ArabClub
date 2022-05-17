@@ -1,7 +1,10 @@
 from django.db import models
+"""
+Create tables in database for more user information
+with relationship with user
+"""
 from users.models import User
 
-# Create your models here.
 
 class Name(models.Model):
     first_name = models.CharField(max_length=50, verbose_name="First Name")
@@ -10,8 +13,10 @@ class Name(models.Model):
         User, related_name="name", primary_key=True, on_delete=models.CASCADE
     )
 
+
     def __str__(self):
         return self.first_name
+
 
     @property
     def get_full_name(self):
@@ -24,8 +29,10 @@ class Bio(models.Model):
         User, related_name="bio", primary_key=True, on_delete=models.CASCADE
     )
 
+
     def __str__(self):
         return self.bio
+
 
     def get_absolute_url(self):
         user = User.objects.get(pk=self.id)
@@ -38,6 +45,7 @@ class Phone(models.Model):
         User, related_name="phone", primary_key=True, on_delete=models.CASCADE
     )
 
+
     def __str__(self):
         return self.phone
 
@@ -49,8 +57,10 @@ class GitHubAccount(models.Model):
         on_delete=models.CASCADE
     )
 
+
     def __str__(self):
         return self.github
+
 
     def save(self, *args, **kwargs):
         self.github = 'https://github.com/{}'.format(self.github)
@@ -63,14 +73,17 @@ class Skills(models.Model):
         User, related_name="skills", primary_key=True, on_delete=models.CASCADE
     )
 
+
     def __str__(self):
         return self.skill
+
 
     @property
     def get_skills(self):
         skills = self.skill.split(',')
         skills.pop(-1)
         return skills
+
 
     def save(self, *args, **kwargs):
         self.skill = self.skill.title()
@@ -81,24 +94,30 @@ class Address(models.Model):
     country = models.CharField(max_length=50, verbose_name="Country")
     city = models.CharField(max_length=50, verbose_name="City")
     user = models.OneToOneField(
-        User, related_name="address", primary_key=True, on_delete=models.CASCADE
+        User, related_name="address", primary_key=True,
+        on_delete=models.CASCADE
     )
+
 
     def __str__(self):
         return self.country
+
 
     def save(self, *args, **kwargs):
         self.country = self.country.title()
         self.city = self.city.title()
         return super(Address, self).save(*args, **kwargs)
 
+
     @property
     def get_full_address(self):
         return f"{self.city}, {self.country}"
 
+
     @property
     def get_country(self):
         return self.country
+
 
     @property
     def get_city(self):

@@ -10,8 +10,10 @@ class Tag(models.Model):
     post = models.ForeignKey(Post, related_name="post_tags",
                              on_delete=models.CASCADE)
 
+
     def __str__(self):
         return self.tag
+
 
     def save(self, *args, **kwargs):
         tag = Tag.objects.filter(tag=self.tag)
@@ -27,6 +29,7 @@ class FollowTag(models.Model):
 
     user = models.ForeignKey(User, related_name="follow_tag",
                              on_delete=models.CASCADE)
+
 
     def __str__(self):
         return self.tag.tag

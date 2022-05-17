@@ -169,7 +169,10 @@ class CreateUserTestCase(APITestCase):
         }
 
         response = self.client.put(
-            url, data=error_change, format="json", HTTP_AUTHORIZATION=self.token
+            url,
+            data=error_change,
+            format="json",
+            HTTP_AUTHORIZATION=self.token
         )
 
     def test_raise_errors(self):

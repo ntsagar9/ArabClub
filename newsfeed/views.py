@@ -5,25 +5,26 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from newsfeed.models import Post
-from newsfeed.permissions import IsOwner
+from permissions.permissions import IsOwner
 from newsfeed.serializer import (
     PostSerializer,
     PostUpdateSerializer,
     PostListSerializer
 )
+from logging_manager import eventslog
+from drf_yasg.utils import swagger_auto_schema
+logger = eventslog.logger
 
 
 class PostListView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     @staticmethod
-    def get_queryset():
-        return get_list_or_404(Post)
+    def get_queryset(count):
+        return get_list_or_404(Post.objects.all()[:count])
 
-    def get(self, request, post_count=100):
-        # View By follow tags
-        # self.get_user_tags(post_count=(int(post_count)))
-        obj = self.get_queryset()
+    def get(self, request, count=20):
+        obj = self.get_queryset(int(count))
 
         serializer = PostListSerializer(obj, many=True)
         return Response(serializer.data)
@@ -34,13 +35,12 @@ class PostListView(APIView):
         if serializer.is_valid():
             serializer.create(serializer.validated_data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        logger.error('{} - {}'.format(serializer.errors, request.user))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PostDetailsView(APIView):
-    permission_classes = [
-        IsOwner,
-    ]
+    permission_classes = [IsOwner]
 
     def get_object(self, request, pk):
         obj = get_object_or_404(Post, pk=pk)
@@ -58,6 +58,7 @@ class PostDetailsView(APIView):
         if serializer.is_valid():
             serializer.update(obj, serializer.validated_data)
             return Response(serializer.data)
+        logger.error('{} - {}'.format(serializer.errors, request.user))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, slug, pk):

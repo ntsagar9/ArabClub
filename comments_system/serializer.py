@@ -6,8 +6,9 @@ from users.serializers import UserShortSerializer
 
 
 class ReplySerializer(serializers.ModelSerializer):
-    # user = UserShortSerializer(read_only=True)
-    # # comment = serializers.PrimaryKeyRelatedField(read_only=True)
+    """
+    Reply serializer with relation data from post and user
+    """
 
     class Meta:
         model = Reply
@@ -19,6 +20,8 @@ class ReplySerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """comment serializer with relation data from reply and user post"""
+
     replys_comment = ReplySerializer(many=True, required=False)
     user = UserShortSerializer(required=False)
 
@@ -45,6 +48,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CommentUpdateSerializer(serializers.ModelSerializer):
+    """ Comment update with none post_id, user_id
+    but auto add by server not client"""
     post = serializers.PrimaryKeyRelatedField(read_only=True)
     user = serializers.PrimaryKeyRelatedField(read_only=True)
 
