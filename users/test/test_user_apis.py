@@ -3,12 +3,12 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from user_profile.models import (
-    Phone,
-    Name,
-    Skills,
-    GitHubAccount,
-    Bio,
     Address,
+    Bio,
+    GitHubAccount,
+    Name,
+    Phone,
+    Skills,
 )
 
 user_model = get_user_model()
@@ -61,8 +61,6 @@ class CreateUserTestCase(APITestCase):
     def test_get_user_token(self):
         data = {"username": self.user.username, "password": "123"}
         response = self.client.post(urls["token"], data, format="json")
-        token = response.data["access"]
-        refresh_token = response.data["refresh"]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_users_details_with_out_admin(self):
@@ -94,8 +92,10 @@ class CreateUserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_add_more_data_with_aut(self):
-        data = {"skills": {"skill": "Python,"},
-                "phone": {"phone": "01066373279"}}
+        data = {
+            "skills": {"skill": "Python,"},
+            "phone": {"phone": "01066373279"},
+        }
         url = f'{urls["details"]}{self.user.username}/'
 
         response = self.client.put(
@@ -154,11 +154,14 @@ class CreateUserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(str(phone), data["phone"]["phone"])
         self.assertEqual(str(skills), data["skills"]["skill"].title())
-        self.assertEqual(str(github), f'https://github.com/'
-                                      f'{data["github"]["github"]}')
+        self.assertEqual(
+            str(github), f"https://github.com/" f'{data["github"]["github"]}'
+        )
         self.assertEqual(address.get_full_address, full_address)
         self.assertEqual(name.first_name, data["name"]["first_name"])
-        self.assertEqual(name.last_name, data["name"]["last_name"])
+        self.assertEqual(
+            name.last_name, data["name"]["last_name"]
+        )  # noqa:F841
         self.assertEqual(str(bio), data["bio"]["bio"])
 
     def test_validator_username(self):
@@ -168,11 +171,11 @@ class CreateUserTestCase(APITestCase):
             "username": "valid",
         }
 
-        response = self.client.put(
+        self.client.put(
             url,
             data=error_change,
             format="json",
-            HTTP_AUTHORIZATION=self.token
+            HTTP_AUTHORIZATION=self.token,
         )
 
     def test_raise_errors(self):

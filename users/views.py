@@ -5,14 +5,10 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from permissions.permissions import IsAdminUser, IsOwner
-from users.serializers import (
-    UserSerializer,
-    CreateUserSerializer,
-    NameSerializer
-)
-from logging_manager import eventslog
 
+from logging_manager import eventslog
+from permissions.permissions import IsAdminUser, IsOwner
+from users.serializers import CreateUserSerializer, UserSerializer
 
 user_model = get_user_model()
 logger = eventslog.logger
@@ -29,7 +25,7 @@ class ListUserView(APIView):
         # me.create_user()    auto crate user for testing
         users = user_model.objects.all()
         serializer = UserSerializer(users, many=True)
-        logger.info('{} - {}'.format(request, request.user))
+        logger.info(f"{request} - {request.user}")
         return Response(serializer.data)
 
 
@@ -53,8 +49,7 @@ class UserDetailsView(APIView):
             user = self.get_object(username)
             serializer.update(user, serializer.validated_data)
             return Response(serializer.data, status.HTTP_201_CREATED)
-        logger.error('{} - {} - {}'.format(
-            serializer.errors, request, request.user))
+        logger.error(f"{serializer.errors} - {request} - {request.user}")
         return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
 
@@ -65,9 +60,11 @@ class CreateUserView(APIView):
         serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.create(serializer.validated_data)
-            logger.info('{} - Just joined'.format(
-                serializer.validated_data.get('username')))
+            logger.info(
+                "{} - Just joined".format(
+                    serializer.validated_data.get("username")
+                )
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        logger.error('{} - {} - {}'.format(
-            serializer.errors, request, request.user))
+        logger.error(f"{serializer.errors} - {request} - {request.user}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

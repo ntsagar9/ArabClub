@@ -21,8 +21,10 @@ class Comment(models.Model):
         return self.comment
 
     def get_absolute_url(self):
-        return reverse('newsfeed:comment_sys:create_comment',
-                       args=[self.post.slug, self.post.pk, self.pk])
+        return reverse(
+            "newsfeed:comment_sys:create_comment",
+            args=[self.post.slug, self.post.pk, self.pk],
+        )
 
 
 class Reply(models.Model):

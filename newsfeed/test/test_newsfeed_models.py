@@ -1,18 +1,19 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from rest_framework.test import APIClient
-from django.utils.text import slugify
-from newsfeed.models import Post
 from django.urls import reverse
+from django.utils.text import slugify
+from rest_framework.test import APIClient
+
+from newsfeed.models import Post
+
 user_model = get_user_model()
 
 urls = {
     "token": "/api/v1/token/",
-    "reply": '/api/v1/posts/comment/reply/',
-    'update_comment': '/api/v1/posts/comment/',
-    'create_comment': '/api/v1/posts/comment/',
-    'post': '/api/v1/posts/',
-
+    "reply": "/api/v1/posts/comment/reply/",
+    "update_comment": "/api/v1/posts/comment/",
+    "create_comment": "/api/v1/posts/comment/",
+    "post": "/api/v1/posts/",
 }
 
 
@@ -35,20 +36,23 @@ class PostModelsTestCase(TestCase):
 
         # Create Post
         post = {
-            'title': 'Hello, TestCase!',
-            'content': 'this is post create from news feed test case!',
-            'user_id': self.user.pk
+            "title": "Hello, TestCase!",
+            "content": "this is post create from news feed test case!",
+            "user_id": self.user.pk,
         }
-        self.response = self.client.post(urls['post'], data=post,
-                                         HTTP_AUTHORIZATION=self.token,
-                                         format='json')
+        self.response = self.client.post(
+            urls["post"],
+            data=post,
+            HTTP_AUTHORIZATION=self.token,
+            format="json",
+        )
 
-        self.slug = slugify(self.response.data['title'])
+        self.slug = slugify(self.response.data["title"])
         self.post = Post.objects.get(slug=self.slug)
 
     def test_title(self):
         url = f'{urls["post"]}{self.slug}-{self.post.pk}'
-        url = reverse('newsfeed:post_details', args=[self.slug, self.post.pk])
+        url = reverse("newsfeed:post_details", args=[self.slug, self.post.pk])
 
         self.assertEqual(url, self.post.get_absolute_url())
         self.assertEqual(self.post.__str__(), self.post.title)

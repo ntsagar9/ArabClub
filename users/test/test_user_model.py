@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+
 from user_profile.models import (
+    Address,
+    Bio,
+    GitHubAccount,
     Name,
     Phone,
-    GitHubAccount,
-    Address,
     Skills,
-    Bio,
 )
 
 
@@ -104,7 +105,7 @@ class UserRelationsTest(TestCase):
         url = "islam-kamel"
         github = GitHubAccount.objects.create(github=url, user_id=user.pk)
 
-        self.assertEqual(str(github), f'https://github.com/{url}')
+        self.assertEqual(str(github), f"https://github.com/{url}")
         """
         Relations Models Test
         """
@@ -122,5 +123,4 @@ class UserRelationsTest(TestCase):
         self.assertEqual(bio.bio, "Hello, World!")
         self.assertEqual(names.first_name, "Test")
         self.assertEqual(names.last_name, "Case")
-        self.assertEqual(github.github, f'https://github.com/{url}')
-
+        self.assertEqual(github.github, f"https://github.com/{url}")

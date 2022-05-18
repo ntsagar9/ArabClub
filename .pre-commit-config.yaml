@@ -15,21 +15,11 @@ repos:
     hooks:
       - id: pyupgrade
         args: ["--py36-plus"]
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.9.3
-    hooks:
-      - id: isort
-        name: isort (python)
-        args: ["--profile", "black"]
-      - id: isort
-        name: isort (pyi)
-        types: [pyi]
-        args: ["--profile", "black"]
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
       - id: black
-        args: [--safe]
+        args: [--safe, -l 79]
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:

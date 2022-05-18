@@ -6,17 +6,17 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
+
 from tag_system.models import FollowTag
-from users.models import User
 from user_profile.models import (
-    Name,
-    Phone,
-    Skills,
     Address,
     Bio,
     GitHubAccount,
+    Name,
+    Phone,
+    Skills,
 )
-
+from users.models import User
 
 
 class UserCreationFrom(forms.ModelForm):
@@ -36,7 +36,8 @@ class UserCreationFrom(forms.ModelForm):
         # Check that the username is valid
         username = self.cleaned_data.get("username")
         is_valid = re.search(
-            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$", username
+            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$",
+            username,
         )
         if not is_valid:
             raise ValidationError("Enter Valid Username")
@@ -83,7 +84,8 @@ class UserChangeForm(forms.ModelForm):
         # Check that the username is valid
         username = self.cleaned_data.get("username")
         is_valid = re.search(
-            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$", username
+            r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$",
+            username,
         )
         if not is_valid:
             raise ValidationError("Enter Valid Username")

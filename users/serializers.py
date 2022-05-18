@@ -3,17 +3,17 @@ import re
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from logging_manager import eventslog
 from tag_system.serializer import FollowTagsSerializers
 from user_profile.serializer import (
+    AddressSerializer,
+    BioSerializer,
+    GitHubSerializer,
     NameSerializer,
     PhoneSerializer,
     SkillsSerializer,
-    GitHubSerializer,
-    BioSerializer,
-    AddressSerializer,
-
 )
-from logging_manager import eventslog
+
 logger = eventslog.logger
 
 
@@ -21,12 +21,14 @@ def auto_try(func):
     """
     Exception any errors
     """
+
     def run(*args, **kwargs):
         try:
             func(*args, **kwargs)
         except Exception as e:
             logger.error(e)
             return e
+
     return run
 
 
@@ -36,6 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
     this class can call all related others classes with 'other func'
     each class is responsible for updating the information about
     """
+
     bio = BioSerializer(required=False)
     phone = PhoneSerializer(required=False)
     skills = SkillsSerializer(required=False)
@@ -50,8 +53,17 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = [
-            "id", "name", "username", "email", "date_of_birth", "bio",
-            "skills", "github", "phone", "address", "follow_tag",
+            "id",
+            "name",
+            "username",
+            "email",
+            "date_of_birth",
+            "bio",
+            "skills",
+            "github",
+            "phone",
+            "address",
+            "follow_tag",
         ]
 
     @staticmethod
@@ -84,19 +96,19 @@ class UserSerializer(serializers.ModelSerializer):
         """
         for k in [*validated_data]:
             match k:
-                case 'follow_tag':
+                case "follow_tag":
                     self.update_follow_tag(instance, validated_data[k])
-                case 'name':
+                case "name":
                     self.update_name(instance, validated_data[k])
-                case 'bio':
+                case "bio":
                     self.update_bio(instance, validated_data[k])
-                case 'phone':
+                case "phone":
                     self.update_phone(instance, validated_data[k])
-                case 'github':
+                case "github":
                     self.update_github_url(instance, validated_data[k])
-                case 'address':
+                case "address":
                     self.update_address(instance, validated_data[k])
-                case 'skills':
+                case "skills":
                     self.update_skills(instance, validated_data[k])
 
     # Every function responsible is update its part from information
@@ -158,7 +170,7 @@ class UserShortSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['pk', 'name']
+        fields = ["pk", "name"]
 
 
 class CreateUserSerializer(serializers.ModelSerializer):

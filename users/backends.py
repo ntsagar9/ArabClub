@@ -1,12 +1,14 @@
 from django.contrib.auth.backends import ModelBackend
-from users.models import User
+
 from logging_manager import eventslog
+from users.models import User
 
 
 class EmailModelBackend(ModelBackend):
     """
     authentication class to login with the email address Or Username.
     """
+
     def authenticate(self, request, username=None, password=None, **kwargs):
         logger = eventslog.logger
         try:
@@ -17,14 +19,16 @@ class EmailModelBackend(ModelBackend):
                     kwargs = {"username": username}
 
             if password is None:
-                logger.error('Request with password is None!:', request.data)
+                logger.error("Request with password is None!:", request.data)
                 return None
             try:
                 user = User.objects.get(**kwargs)
             except User.DoesNotExist:
                 pass
             else:
-                if user.check_password(password) and self.user_can_authenticate(user):
+                if user.check_password(
+                    password
+                ) and self.user_can_authenticate(user):
                     return user
         except Exception as e:
-            logger.error('{} - {}'.format(e, request))
+            logger.error(f"{e} - {request}")

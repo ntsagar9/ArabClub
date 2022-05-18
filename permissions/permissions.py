@@ -1,5 +1,6 @@
-from rest_framework import permissions, status
+from rest_framework import permissions
 from rest_framework.serializers import ValidationError
+
 from logging_manager import eventslog
 
 logger = eventslog.logger
@@ -25,17 +26,16 @@ class IsOwner(permissions.BasePermission):
             )
             raise ValidationError(
                 {
-                    "detail":
-                        "You do not have permission to perform this action."
+                    "detail": """
+                    You do not have permission to perform this action.
+                    """
                 }
             )
         return obj.id == request.user.id
 
 
 class IsAdminUser(permissions.BasePermission):
-
     def has_permission(self, request, view):
         if request.user and request.user.is_staff:
             return True
-        logger.error('Bad gateway! - {} - {}'.format(request.user, request))
-
+        logger.error(f"Bad gateway! - {request.user} - {request}")

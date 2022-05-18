@@ -1,22 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APIClient, APITestCase
 
 from newsfeed.models import Post
 
 user_model = get_user_model()
 urls = {
     "token": "/api/v1/token/",
-    "reply": '/api/v1/posts/comment/reply/',
-    'update_comment': '/api/v1/posts/comment/',
-    'create_comment': '/api/v1/posts/comment/',
-    'post': '/api/v1/posts/',
-
+    "reply": "/api/v1/posts/comment/reply/",
+    "update_comment": "/api/v1/posts/comment/",
+    "create_comment": "/api/v1/posts/comment/",
+    "post": "/api/v1/posts/",
 }
 
 
 class PostAPITestCase(APITestCase):
-
     def setUp(self) -> None:
         user_data = {
             "username": "user_test_case",
@@ -35,49 +33,49 @@ class PostAPITestCase(APITestCase):
 
         # Create Post
         post = {
-            'title': 'Hello, TestCase!',
-            'content': 'this is post create from news feed test case!',
-            'user_id': self.user.pk
+            "title": "Hello, TestCase!",
+            "content": "this is post create from news feed test case!",
+            "user_id": self.user.pk,
         }
-        self.response = self.client.post(urls['post'], data=post,
-                                         HTTP_AUTHORIZATION=self.token,
-                                         format='json')
+        self.response = self.client.post(
+            urls["post"],
+            data=post,
+            HTTP_AUTHORIZATION=self.token,
+            format="json",
+        )
 
-        self.slug = slugify(self.response.data['title'])
+        self.slug = slugify(self.response.data["title"])
         self.post = Post.objects.get(slug=self.slug)
 
     def test_create_post(self):
         self.assertEqual(self.response.status_code, 201)
 
     def test_update_title(self):
-        date = {
-            'title': 'Hello, Edite from TestCase'
-        }
+        date = {"title": "Hello, Edite from TestCase"}
         url = f"{urls['post']}{self.slug}-{self.post.pk}"
-        response = self.client.put(url, data=date,
-                                   HTTP_AUTHORIZATION=self.token, format='json')
+        response = self.client.put(
+            url, data=date, HTTP_AUTHORIZATION=self.token, format="json"
+        )
         self.post = Post.objects.get(pk=self.post.pk)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.post.title, date['title'])
+        self.assertEqual(self.post.title, date["title"])
 
     def test_update_content(self):
-        date = {
-            'content': 'Hello, Edite from TestCase.!'
-        }
+        date = {"content": "Hello, Edite from TestCase.!"}
         url = f"{urls['post']}{self.slug}-{self.post.pk}"
-        response = self.client.put(url, data=date,
-                                   HTTP_AUTHORIZATION=self.token, format='json')
+        response = self.client.put(
+            url, data=date, HTTP_AUTHORIZATION=self.token, format="json"
+        )
         self.post = Post.objects.get(pk=self.post.pk)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.post.content, date['content'])
+        self.assertEqual(self.post.content, date["content"])
 
     def test_delete_post(self):
         url = f"{urls['post']}{self.slug}-{self.post.pk}"
-        response = self.client.delete(url, HTTP_AUTHORIZATION=self.token,
-                                      format='json')
+        response = self.client.delete(
+            url, HTTP_AUTHORIZATION=self.token, format="json"
+        )
 
         self.assertEqual(response.status_code, 204)
         with self.assertRaises(Post.DoesNotExist):
-            post = Post.objects.get(pk=self.post.pk)
-
-
+            Post.objects.get(pk=self.post.pk)

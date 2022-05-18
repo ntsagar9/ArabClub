@@ -1,10 +1,6 @@
 from django.urls import path
 
-from users.views import (
-    ListUserView,
-    UserDetailsView,
-    CreateUserView,
-)
+from users.views import CreateUserView, ListUserView, UserDetailsView
 
 url_path = "user/<str:username>/"
 

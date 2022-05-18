@@ -1,6 +1,5 @@
 import logging
 
-
 logging.basicConfig(level=logging.DEBUG)
 # Crate custom massage format
 formatter = """
@@ -17,9 +16,9 @@ logger.propagate = 0
 # Crate stream handler
 stream_h = logging.StreamHandler()
 # Create File handler
-file_h = logging.FileHandler('error.log')
+file_h = logging.FileHandler("error.log")
 # Success Process handler
-success_h = logging.FileHandler('success.log')
+success_h = logging.FileHandler("success.log")
 
 # Set event level for stream
 stream_h.setLevel(logging.WARNING)

@@ -1,11 +1,12 @@
 import re
 
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
 from logging_manager import eventslog
-import traceback
+
 # from newsfeed.models import Tag
 logger = eventslog.logger
 
@@ -29,7 +30,7 @@ class CustomUserManager(BaseUserManager):
             r"^[a-zA](?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
         )
         if not re.fullmatch(pattern, username):
-            logger.error(_('Enter Valid Username'))
+            logger.error(_("Enter Valid Username"))
             raise ValueError(_("Enter Valid Username"))
 
         user = self.model(
@@ -58,10 +59,12 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    email = models.EmailField(verbose_name="Email", max_length=255,
-                              unique=True)
-    username = models.CharField(verbose_name="Username", max_length=50,
-                                unique=True)
+    email = models.EmailField(
+        verbose_name="Email", max_length=255, unique=True
+    )
+    username = models.CharField(
+        verbose_name="Username", max_length=50, unique=True
+    )
     date_of_birth = models.DateField()
     join_date = models.DateTimeField(auto_now=timezone.now)
 

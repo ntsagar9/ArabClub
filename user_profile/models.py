@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+
 """
 Create tables in database for more user information
 with relationship with user
@@ -13,10 +15,8 @@ class Name(models.Model):
         User, related_name="name", primary_key=True, on_delete=models.CASCADE
     )
 
-
     def __str__(self):
         return self.first_name
-
 
     @property
     def get_full_name(self):
@@ -29,10 +29,8 @@ class Bio(models.Model):
         User, related_name="bio", primary_key=True, on_delete=models.CASCADE
     )
 
-
     def __str__(self):
         return self.bio
-
 
     def get_absolute_url(self):
         user = User.objects.get(pk=self.id)
@@ -45,7 +43,6 @@ class Phone(models.Model):
         User, related_name="phone", primary_key=True, on_delete=models.CASCADE
     )
 
-
     def __str__(self):
         return self.phone
 
@@ -53,18 +50,15 @@ class Phone(models.Model):
 class GitHubAccount(models.Model):
     github = models.CharField(max_length=50)
     user = models.OneToOneField(
-        User, related_name="github", primary_key=True,
-        on_delete=models.CASCADE
+        User, related_name="github", primary_key=True, on_delete=models.CASCADE
     )
-
 
     def __str__(self):
         return self.github
 
-
     def save(self, *args, **kwargs):
-        self.github = 'https://github.com/{}'.format(self.github)
-        return super(GitHubAccount, self).save(*args, **kwargs)
+        self.github = f"https://github.com/{self.github}"
+        return super().save(*args, **kwargs)
 
 
 class Skills(models.Model):
@@ -73,51 +67,45 @@ class Skills(models.Model):
         User, related_name="skills", primary_key=True, on_delete=models.CASCADE
     )
 
-
     def __str__(self):
         return self.skill
 
-
     @property
     def get_skills(self):
-        skills = self.skill.split(',')
+        skills = self.skill.split(",")
         skills.pop(-1)
         return skills
 
-
     def save(self, *args, **kwargs):
         self.skill = self.skill.title()
-        return super(Skills, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class Address(models.Model):
     country = models.CharField(max_length=50, verbose_name="Country")
     city = models.CharField(max_length=50, verbose_name="City")
     user = models.OneToOneField(
-        User, related_name="address", primary_key=True,
-        on_delete=models.CASCADE
+        User,
+        related_name="address",
+        primary_key=True,
+        on_delete=models.CASCADE,
     )
-
 
     def __str__(self):
         return self.country
 
-
     def save(self, *args, **kwargs):
         self.country = self.country.title()
         self.city = self.city.title()
-        return super(Address, self).save(*args, **kwargs)
-
+        return super().save(*args, **kwargs)
 
     @property
     def get_full_address(self):
         return f"{self.city}, {self.country}"
 
-
     @property
     def get_country(self):
         return self.country
-
 
     @property
     def get_city(self):
