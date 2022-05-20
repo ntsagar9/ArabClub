@@ -7,7 +7,7 @@ app_name = "newsfeed"
 urlpatterns = [
     # Get posts with limit posts count or get all posts by default count
     re_path(
-        r"(?:limit=(?P<count>\d+)/)?$",
+        r"(?:page=(?P<page_number>\d+)/)?$",
         PostListView.as_view(),
         name="post_list",
     ),
