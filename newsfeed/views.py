@@ -3,7 +3,6 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from logging_manager import eventslog
 from newsfeed.models import Post
 from newsfeed.serializer import (
@@ -12,6 +11,7 @@ from newsfeed.serializer import (
     PostUpdateSerializer,
 )
 from permissions.permissions import IsOwner
+from arabclub_pagination import Pagination
 
 logger = eventslog.logger
 
@@ -20,13 +20,19 @@ class PostListView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     @staticmethod
-    def get_queryset(count):
-        return get_list_or_404(Post.objects.all()[:count])
+    def get_queryset():
+        return get_list_or_404(Post.objects.all())
 
-    def get(self, request, count=20):
-        obj = self.get_queryset(int(count))
+    def get(self, request, page_number=1):
+        obj = self.get_queryset()
+        pageinator = Pagination(obj)
+        pageinator.create_pages
+        page = pageinator.get_page(page_number)
+        serializer = PostListSerializer(page, many=True)
 
-        serializer = PostListSerializer(obj, many=True)
+        # That comment for me only
+        # result {"next": next_page number, "previous":
+        # previous_page_number, result}
         return Response(serializer.data)
 
     def post(self, request):
