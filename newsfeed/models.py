@@ -3,7 +3,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 
-# from comments_system.models import Comment
 from users.models import User
 
 STATUS_CHOICES = (
@@ -27,6 +26,10 @@ class Post(models.Model):
 
     class Meta:
         ordering = ("-published_at",)
+        indexes = [
+            models.Index(fields=["status"]),
+            models.Index(fields=["published_at"]),
+        ]
 
     def __str__(self):
         return self.title

@@ -25,9 +25,9 @@ class PostListView(APIView):
 
     def get(self, request, page_number=1):
         obj = self.get_queryset()
-        pageinator = Pagination(obj)
-        pageinator.create_pages
-        page = pageinator.get_page(page_number)
+        pagination = Pagination(obj)
+        pagination.create_pages
+        page = pagination.get_page(page_number)
         serializer = PostListSerializer(page, many=True)
 
         # That comment for me only

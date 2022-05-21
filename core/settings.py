@@ -185,7 +185,7 @@ SWAGGER_SETTINGS = {
     },
 }
 
-PAGINATION = {"page_count": 3}
+PAGINATION = {"page_count": 10}
 # Simple JWT Settings
 
 SIMPLE_JWT = {

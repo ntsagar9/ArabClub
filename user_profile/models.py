@@ -15,6 +15,11 @@ class Name(models.Model):
         User, related_name="name", primary_key=True, on_delete=models.CASCADE
     )
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["user_id"]),
+        ]
+
     def __str__(self):
         return self.first_name
 
@@ -28,6 +33,11 @@ class Bio(models.Model):
     user = models.OneToOneField(
         User, related_name="bio", primary_key=True, on_delete=models.CASCADE
     )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user_id"]),
+        ]
 
     def __str__(self):
         return self.bio
@@ -43,6 +53,11 @@ class Phone(models.Model):
         User, related_name="phone", primary_key=True, on_delete=models.CASCADE
     )
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["user_id"]),
+        ]
+
     def __str__(self):
         return self.phone
 
@@ -52,6 +67,11 @@ class GitHubAccount(models.Model):
     user = models.OneToOneField(
         User, related_name="github", primary_key=True, on_delete=models.CASCADE
     )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user_id"]),
+        ]
 
     def __str__(self):
         return self.github
@@ -66,6 +86,11 @@ class Skills(models.Model):
     user = models.OneToOneField(
         User, related_name="skills", primary_key=True, on_delete=models.CASCADE
     )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user_id"]),
+        ]
 
     def __str__(self):
         return self.skill
@@ -90,6 +115,11 @@ class Address(models.Model):
         primary_key=True,
         on_delete=models.CASCADE,
     )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user_id"]),
+        ]
 
     def __str__(self):
         return self.country

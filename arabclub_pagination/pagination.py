@@ -16,6 +16,10 @@ class NoPaginationSettings(RuntimeWarning):
 
 
 class InvalidPage(Exception):
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
     pass
 
 
@@ -28,11 +32,10 @@ class PageNumberNotInInteger(InvalidPage):
 
 
 class Pagination:
-    """
-    Pagination
-    """
+    __temp = []
+    __save_index = 0
 
-    def __init__(self, object_list, page_count=6):
+    def __init__(self, object_list=__temp, page_count=6):
         self.object_list = object_list
 
         # Load pagination settings
@@ -51,8 +54,29 @@ class Pagination:
                 NoPaginationSettings,
                 stacklevel=3,
             )
+        self.__page_manager = Page()
 
-        self.__page_manager = Page(self.__slice_object_list)
+    @classmethod
+    def temp(cls):
+        return Pagination.__temp
+
+    @classmethod
+    def set_temp(cls, data):
+        cls.__temp.append(data)
+        return cls.__temp
+
+    @classmethod
+    def save_index(cls):
+        return cls.__save_index
+
+    @classmethod
+    def increase_save_index(cls):
+        cls.__save_index += 1
+
+    @classmethod
+    def reset_save_index(cls):
+        cls.__temp = []
+        cls.__save_index = 0
 
     def validNumber(self, number):
         """
@@ -94,15 +118,25 @@ class Pagination:
         return range(1, self.page_count + 1)
 
     @property
+    def is_temped(self):
+        current_index = self.__save_index // self.page_count
+        if len(self.__temp) > 0 and self._get_page_size == current_index:
+            return True
+        return False
+
+    @property
     def __slice_object_list(self):
         """
         Create a list containing a number of lists
         so that each list within the flagship list
         will reflect one page to view
         """
-        sliced_list = []
         count = 0
         index = 0
+
+        if self.is_temped:
+            return self.temp()
+        self.reset_save_index()
         while count <= self.page_count:
             count += 1
             temp = []
@@ -111,102 +145,100 @@ class Pagination:
                 page_size <= self._get_page_size
                 and index < self.object_list.__len__()
             ):
-
                 temp.append(self.object_list[index])
                 index += 1
                 page_size += 1
-            sliced_list.append(temp)
-        return sliced_list
+                self.increase_save_index()
+            self.set_temp(temp)
+        return self.temp()
 
     @property
     def create_pages(self):
-        """Create Page"""
-        return self.__page_manager.create()
+        self.__page_manager.object_list = self.__slice_object_list
+        self.__page_manager.object = self.__page_manager.create()
+        return self.__page_manager.object
 
     def get_next_page(self, current):
-        """return following page"""
         return self.__page_manager.get_next_page(current)
 
     def get_previous_page(self, current):
-        """return previous page"""
         return self.__page_manager.get_previous_page(current)
 
     @property
     def get_latest_page(self):
-        """return last page"""
         return self.__page_manager.get_latest_page
 
     @property
     def get_first_page(self):
-        """git first page"""
         return self.__page_manager.get_first_page
 
     def get_page(self, page_number):
-        """Fetch a specific page by selecting the number of each page"""
         page_number = self.validNumber(page_number)
         return self.__page_manager.get_page(page_number).data
 
     @property
     def get_all(self):
-        """return all pages"""
         return self.__page_manager.get_all_pages
 
 
 class Page:
-    """Pages Manager"""
+    __object = None
+    __head_middle = None
 
     def __init__(self, object_list=None):
         self.object_list = object_list
         self.pages = DoublyLinkedListNode()
         self.last_page = -1
 
+    @classmethod
+    def object(cls):
+        return cls.__object
+
+    @classmethod
+    def set_object(cls, head):
+        cls.__object = head
+
     def create(self):
         """Create pages"""
+        if self.object():
+            self.pages.head = Page.__object
+            return Page.__object
+
         for p in self.object_list:
-            self._add_page(p)
-        return self.get_first_page
+            self.set_object(self._add_page(p))
+        return self.object()
 
     @property
     def has_first_page(self):
-        """Check if there is a start page or not"""
         return True if not self._check_page_is_empty else False
 
     @property
     def _check_page_is_empty(self):
-        """Check if that page is empty or not"""
         return True if self.pages.length < 0 else False
 
     @property
     def get_first_page(self):
-        """get first page"""
         if self._check_page_is_empty:
             return self.pages.get_item(0)
-        pass
 
     def _add_page(self, data):
-        """add new page"""
         page = self.pages.push(data)
         self.last_page += 1
         return page
 
     def get_next_page(self, current_page):
-        """get next page"""
         return self.pages.get_item(current_page + 1)
 
     def get_previous_page(self, current_page):
-        """get previous page"""
         return self.pages.get_previous(current_page)
 
     def get_page(self, page_number):
-        """get page by number"""
         return self.pages.get_item(page_number)
 
     @property
     def get_latest_page(self):
-        """get last page"""
         return self.pages.get_item(self.last_page).data
 
     @property
     def get_all_pages(self):
-        """get all pages from queue"""
         return self.pages.get_all_items()

@@ -30,8 +30,6 @@ class EmptyError(Exception):
 
 
 class BaseNode:
-    """Base Node"""
-
     __length = -1
     __last_node: None = None
 
@@ -42,8 +40,6 @@ class BaseNode:
 
         if self.__data is not None:
             BaseNode.move_tail(self)
-            # BaseNode.__last_node = self
-            # BaseNode.length += 1
 
     def __repr__(self):
         return "{}({}, {})".format(
@@ -136,7 +132,7 @@ class BaseNode:
         BaseNode.increase_length()
         try:
             last_node.next = BaseNode(value)
-            # self.__head.next = BaseNode(value)
+            # self.get_middle()
             return self.head.next
         except AttributeError:
             self.__head = BaseNode(value)
@@ -154,11 +150,9 @@ class BaseNode:
         self.is_valid_index(index)
         curr = self.__head
         current_index = 0
-
         if index == current_index:
             return curr
-
-        while index != current_index:
+        while index != current_index and curr.next is not None:
             current_index += 1
             curr = curr.next
         return curr
