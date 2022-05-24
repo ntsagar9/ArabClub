@@ -111,6 +111,8 @@ DATABASES = {
         "PORT": "5432",
     }
 }
+# The lifetime of database connection
+CONN_MAX_AGE = 30000
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -185,9 +187,10 @@ SWAGGER_SETTINGS = {
     },
 }
 
+# The size of page for pagination
 PAGINATION = {"page_count": 10}
-# Simple JWT Settings
 
+# Simple JWT Settings
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
