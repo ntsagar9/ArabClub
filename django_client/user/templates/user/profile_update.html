@@ -1,0 +1,32 @@
+{% extends "blog/base.html" %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class="border  p-4 mb-3  ">
+    <legend class="border-bottom   mb-4 pb-2">تعديل الملف الشخصي</legend>
+    <div class="row text-center">
+        <div class="col-md border-bottom mb-3">
+            <img class="img-fluid rounded-circle border m-2" style="width: 120px; height:120px;"
+                src="{{user.profile.image.url}}" alt="صورة الناشر">
+            <p class="font-weight-bold">الإسم: <span class="font-weight-normal">{{user.first_name}}
+                    {{user.last_name}}</span></p>
+            <p class="font-weight-bold">البريد الإلكتروني: <span class="font-weight-normal">{{user.email}}</span></p>
+        </div>
+    </div>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{user_form|crispy}}
+        <div>
+            <span class="d-block mb-2">الصورة الشخصية</span>
+            <label for="image" class="btn btn-outline-primary">أختر الصورة الشخصية</label>
+            <input class="form-control-file" style="display:none;" type="file" name="image" id="image" accept="image/*"
+                class="btn btn-primary">
+            <label for="image_cover" class="btn btn-outline-primary">أختر صورة الغلاف</label>
+            <input class="form-control-file" style="display:none;" type="file" name="image_cover" id="image_cover"
+                accept="image/*" class="btn btn-primary">
+        </div>
+        <input class="btn btn-primary mt-3  col-sm-12 col-md-2" type="submit" value="تعديل">
+
+    </form>
+</div>
+{% endblock content %}

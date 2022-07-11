@@ -1,0 +1,132 @@
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static 'blog/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/colors.min.css' %}">
+    <link rel="shortcut icon" href="{% static 'blog/images/street.ico' %}">
+    {% if title %}
+    <title>المنطقة | {{title}}</title>
+    {% else %}
+    <title>المنطقة | 312</title>
+    {% endif %}
+</head>
+
+<body>
+    <form method='POST' class="bg-blue login-form form-group mb-5 card mt-5">
+        {% csrf_token %}
+        {% if messages  %}
+        {% for message in messages %}
+        <span class="alert alert-{{message.tags}}">
+            {{message}}
+        </span>
+        {% endfor %}
+        {% endif %}
+        <legend class="border-bottom mb-4 pb-2 text-light">تسجيل الدخول</legend>
+
+        <label for="username" class="text-light">أسم المستخدم</label>
+        <input class="form-control" type="text" id="username" name="username">
+
+        <label for="password" class="mt-3 text-light">كلمة المرور</label>
+        <input class="form-control" type="password" id="password" name="password">
+
+        <input class="btn btn-light mt-4 " type="submit" value="تسجيل دخول">
+        <div class="mt-3 text-light">
+            <small> أذا لم يكن لديك حساب من قبل يمكنك
+                <a class="password-reset-link text-light" href="{% url 'register' %}"> إنشاء حساب جديد </a></small>
+        </div>
+    </form>
+    <footer class="bg-blue">
+
+        <div class="container-fluid">
+
+            <div class="row">
+
+                <div class="col-md mt-3">
+
+                    <div class="card-group ">
+
+                        <div class="card m-3">
+                            <h3 class="card-title text-center border-bottom
+                                p-2 m-3 "> من نحن؟ </h3>
+
+                            <div class="card-body">
+                                <blockquote>
+                                    المدونة تطبيق من تطبيقات شبكة الإنترنت، تكتب فيها التدوينات لنقل الاخبار أو التعبير
+                                    عن الأفكار
+                                </blockquote>
+                            </div>
+                        </div>
+
+                        <div class="card m-3">
+
+                            <h3 class="card-title text-center border-bottom
+                                p-2 m-3 "> مواقع هامة</h3>
+
+                            <div class="card-body">
+                                <ul class="">
+                                    <li class=" "><a class=" text-dark " href="#">الموقع الاول</a></li>
+                                    <li class=" "><a class=" text-dark " href="#">الموقع الثاني</a></li>
+                                    <li class=" "><a class=" text-dark " href="#">الموقع الثالث</a></li>
+                                    <li class=" "><a class=" text-dark " href="#">الموقع الرابع</a></li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <div class="card m-3">
+
+                            <h3 class="card-title text-center border-bottom
+                                p-2 m-3 "> مواقع التواصل الأجتماعي</h3>
+
+                            <h4 class="card-body text-center ">
+                                <span class="blue p-2">
+                                    <a href=""><i class="fab fa-facebook"></i></a>
+                                </span>
+                                <span class="blue p-2">
+                                    <a href=""><i class="fab fa-twitter"></i></a>
+                                </span>
+                                <span class="blue p-2">
+                                    <a href=""><i class="fab fa-instagram"></i></a>
+                                </span>
+                                <span class="blue p-2">
+                                    <a href=""><i class="fab fa-linkedin"></i></a>
+                                </span>
+                                <span class="blue p-2">
+                                    <a href=""><i class="fab fa-telegram"></i></a>
+                                </span>
+                            </h4>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="row p-2">
+                <div class="col-md text-center text-light">
+                    <small>&copy; جميع الحقوق محفوظة</small>
+                </div>
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <script src="{% static 'blog/js/jquery-3.5.1.slim.min.js' %}"></script>
+    <script src="{% static 'blog/js/popper.min.js' %}"></script>
+    <script src="{% static 'blog/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'blog/js/fontawesome-all.min.js' %}"></script>
+</body>
+
+</html>
+{% endblock content %}

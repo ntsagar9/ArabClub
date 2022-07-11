@@ -1,0 +1,17 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+<div class="border  p-4 mb-3  ">
+    <legend class="border-bottom   mb-4 pb-2">تسجيل حساب جديد</legend>
+    <form method="POST">
+        {% csrf_token %}
+        {{form|crispy}}
+        <input class="btn btn-primary mt-3 " type="submit" value="أنشاء حساب">
+    </form>
+    <div class="mt-3">
+        <small> هل لديك حساب بالفعل ؟ <a href="#"> تسجيل الدخول </a></small>
+    </div>
+</div>
+{% endblock content %}

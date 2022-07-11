@@ -2,8 +2,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,venv,pycharm
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,venv,pycharm
 
-arabclub_frontend/
-
+data/
 ### Django ###
 *.log
 *.pot

@@ -1,0 +1,31 @@
+{% extends "blog/base.html" %}
+{% block content %}
+{% if messages  %}
+{% for message in messages %}
+<div class="alert alert-{{message.tags}}">
+    {{message}}
+</div>
+{% endfor %}
+{% endif %}
+{% for post in posts  %}
+<div class="border mb-3  p-3 card bg-blue ">
+    <img class="img-fluid rounded-circle border m-2" style="width: 70px; height:70px;"
+        src="{{post.author.profile.image.url}}" alt="صورة الناشر">
+    <div class="row bg- p-2 pb-0  ">
+        <div class="col-lg-6 col-xl-6 col-md-6 col-sm-6 text-light ">
+            <span>أسم الناشر : {{post.author}}</span>
+        </div>
+
+        <div class="col-lg-6 col-xl-6 col-md-6 col-sm-6 text-xl-left text-lg-left text-md-left text-sm-left text-light">
+            <span> تاريخ النشر {{post.post_date | date:'d-m-Y '}}</span>
+        </div>
+    </div>
+    <div class="alert alert-light">
+        <h3 class="text-dark font-weight-bolder"><a href="{% url 'detail' post.id %}">{{post.title}}</a></h3>
+        <p>{{post.content|safe|truncatewords:35}}</p>
+        <a href="{% url 'detail' post.id %}"> <button class="btn badge-primary"> أقراء المزيد</button></a>
+    </div>
+</div>
+{% endfor %}
+{% include 'blog/pagination.html' with page=posts %}
+{% endblock content %}
