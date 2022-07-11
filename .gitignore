@@ -1,9 +1,14 @@
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,venv,pycharm
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,venv,pycharm
+### Loging ###
+*.log
 
-arabclub_frontend/
+### archive ###
+archive/
+named_api.txt
 
+data/
 ### Django ###
 *.log
 *.pot

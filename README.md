@@ -1,2 +1,0 @@
-﻿# ArabClub
-## Hello, World

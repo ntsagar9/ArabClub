@@ -1,0 +1,57 @@
+services:
+  client_web:
+    build:
+      context: ./django_client/
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
+    volumes:
+      - ./django_client/:/usr/src/app/
+      - client_static_files:/usr/src/app/staticfiles
+
+  api_web:
+    build:
+      context: ./django_restfull/
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
+    volumes:
+      - ./django_restfull/:/usr/src/app/
+      - api_static_files:/usr/src/app/staticfiles
+    depends_on:
+      - db
+
+  nginx:
+    build:
+      context: ./nginx/
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - client_static_files:/home/app/client/staticfiles
+      - api_static_files:/home/app/api/staticfiles
+  dns:
+    build:
+      context: ./dns/
+    restart: always
+    ports:
+      - 53:53
+      - 53:53/udp
+    volumes:
+      - ./dns/named.conf:/etc/bind/named.conf
+      - ./dns/zone/:/etc/bind/zone/
+    command: named -c /etc/bind/named.conf -g -u named
+
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=arabclub_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=whiskey
+    container_name: postgres_db
+
+volumes:
+  client_static_files:
+  api_static_files:
