@@ -15,21 +15,6 @@ from user_profile.serializer import (
 logger = eventslog.logger
 
 
-def auto_try(func):
-    """
-    Exception any errors
-    """
-
-    def run(*args, **kwargs):
-        try:
-            func(*args, **kwargs)
-        except Exception as e:
-            logger.error(e)
-            return e
-
-    return run
-
-
 class UserSerializer(serializers.ModelSerializer):
     """
     Update all information for users from one end point

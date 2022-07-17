@@ -7,7 +7,7 @@
 ### archive ###
 archive/
 named_api.txt
-
+.idea
 data/
 ### Django ###
 *.log
