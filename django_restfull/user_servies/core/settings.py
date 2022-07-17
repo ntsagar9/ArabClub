@@ -96,7 +96,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / "user_services.sqlite3",
     }
 }
 
@@ -145,6 +145,8 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "user.backends.EmailModelBackend",
 ]
+# Custom User Model
+AUTH_USER_MODEL = "user.User"
 
 # Api Settings
 
