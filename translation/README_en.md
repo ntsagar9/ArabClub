@@ -15,3 +15,9 @@ I will build this project using the `Microservices` principles
 I will do my own client project `Client` which is responsible for displaying data from the 'APIs'
 
 Of course, the `APIs` project was established.
+
+### user_read_api : URLs
+```
+GET:    users/list
+GET:    users/<user_name>
+```

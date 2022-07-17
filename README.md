@@ -13,3 +13,9 @@
 سوف اقوم بعمل مشروع خاص بي العميل `Client`  وهو مسئول عن عرض البيانات من ال `APIs`
 
 وبالطبع انشاء مشروع `APIs`
+
+### user_read_api : URLs
+```
+GET:    users/list       `Admin only`
+GET:    users/<user_name>
+```
